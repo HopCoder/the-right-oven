@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Picture, User
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.template import loader, RequestContext
 from django.templatetags.static import static
 from django.core.urlresolvers import reverse
 from django.views.generic import View
@@ -19,4 +20,6 @@ class ViewPicture(View):
         # TODO: how to sort list? right now just choose the first one
         final_pic = display_pics[0]
         # TODO: add user to the list of people that have seen this picture
-        return HttpResponseRedirect(static(final_pic.unique_code))
+        #return HttpResponseRedirect(static(final_pic.unique_code))
+        return HttpResponse(loader.get_template('base.html').render(RequestContext(request,{})))
+
