@@ -27,7 +27,7 @@ public class splash extends Activity {
             public void run() {
                     // This method will be executed once the timer is over
                     // Start your app main activity
-                    Intent i = new Intent(splash.this, main_menu.class);
+                    Intent i = new Intent(splash.this, receive.class);
                     startActivity(i);
 
                     // close this activity

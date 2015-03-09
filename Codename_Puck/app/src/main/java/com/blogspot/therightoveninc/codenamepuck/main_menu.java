@@ -1,11 +1,9 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 
 public class main_menu extends ActionBarActivity {
@@ -13,7 +11,7 @@ public class main_menu extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_menu);
+        setContentView(R.layout.intro);
     }
 
     @Override
@@ -37,8 +35,4 @@ public class main_menu extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-  public void onCameraClick(View view){
-      Intent cameraIntent = new Intent(this, cameraActivity.class);
-      startActivity(cameraIntent);
-  }
 }
