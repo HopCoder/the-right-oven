@@ -20,6 +20,6 @@ class ViewPicture(View):
         # TODO: how to sort list? right now just choose the first one
         final_pic = display_pics[0]
         # TODO: add user to the list of people that have seen this picture
-        #return HttpResponseRedirect(static(final_pic.unique_code))
-        return HttpResponse(loader.get_template('base.html').render(RequestContext(request,{})))
+        return HttpResponseRedirect(static(final_pic.unique_code))
+        #return HttpResponse(loader.get_template('base.html').render(RequestContext(request,{})))
 
