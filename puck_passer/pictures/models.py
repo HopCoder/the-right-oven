@@ -7,6 +7,7 @@ class Picture(models.Model):
     lon = models.DecimalField(max_digits=11,decimal_places=8)
     unique_code = models.CharField(max_length=50)
     #TODO: add something to track the user that posted
+    #TODO: add something to track how many views the picture has left
     
     def __str__(self):
         return self.unique_code
