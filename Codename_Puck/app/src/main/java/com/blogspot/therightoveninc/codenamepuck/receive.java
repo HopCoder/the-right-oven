@@ -1,6 +1,7 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +56,9 @@ public class receive extends ActionBarActivity {
                 return true;
             case R.id.action_report:
                 reportClick();
+                return true;
+            case R.id.action_camera:
+                onCameraClick();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -162,6 +166,11 @@ public class receive extends ActionBarActivity {
     public void reportCancelClick(View v)
     {
         popupWindow.dismiss();
+    }
+
+    public void onCameraClick(){
+        Intent cameraIntent = new Intent(this, cameraActivity.class);
+        startActivity(cameraIntent);
     }
 
     private void messageDelete()
