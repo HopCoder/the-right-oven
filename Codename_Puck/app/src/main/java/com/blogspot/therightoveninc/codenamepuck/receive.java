@@ -1,24 +1,30 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
-import android.support.v7.app.ActionBar;
+import android.annotation.TargetApi;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Display;
 import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 
 public class receive extends ActionBarActivity {
+    public int messageCount = 3;
+    private PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +48,17 @@ public class receive extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch (id)
+        {
+            case R.id.action_settings:
 
-        return super.onOptionsItemSelected(item);
+                return true;
+            case R.id.action_report:
+                reportClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setDimensions()
@@ -115,12 +126,52 @@ public class receive extends ActionBarActivity {
     public void puckClick(View v)
     {
         Log.e("a", "hi");
+
+        messageDelete();
     }
 
     public void shuckClick(View v)
     {
         Log.e("a", "shuck that!");
+
+        messageDelete();
     }
 
+    // Popup code (mostly) starts here
+    public void reportClick()
+    {
+        LayoutInflater layoutInflater
+                = (LayoutInflater)getBaseContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = layoutInflater.inflate(R.layout.popup, null);
+        popupWindow = new PopupWindow(
+                popupView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, false);
+        popupWindow.setOutsideTouchable(false);
+
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+    }
+
+    public void  reportConfirmClick(View v)
+    {
+        // TODO: add user report logic here
+
+        popupWindow.dismiss();
+        messageDelete();
+    }
+
+    public void reportCancelClick(View v)
+    {
+        popupWindow.dismiss();
+    }
+
+    private void messageDelete()
+    {
+        messageCount -= 1;
+
+        if (messageCount <= 0)
+        {
+            setContentView(R.layout.intro);
+        }
+    }
 
 }
