@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pictures',
+    'puck_user',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -92,3 +93,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Template Loaders
+TEMPLATE_LOADERS = (
+    'django.template.loaders.app_directories.Loader',
+)
+

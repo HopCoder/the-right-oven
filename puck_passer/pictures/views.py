@@ -7,13 +7,10 @@ from django.core.urlresolvers import reverse
 from django.views.generic import View
 import math
 import random
+from django.views.decorators.csrf import csrf_exempt
+import os.path
 
 random.seed()
-
-def switch_vals(num1, num2):
-    temp = num1
-    num1 = num2
-    num2 = temp
 
 class ViewPicture(View):
     def get_range(self, lat, lon, dist):
@@ -34,8 +31,8 @@ class ViewPicture(View):
 
         # TODO: add bound checking
         
-        if(max_lat < min_lat) switch_vals(max_lat, min_lat)
-        if(max_lon < min_lon) switch_vals(max_lon, min_lon)
+        if max_lat < min_lat: min_lat, max_lat = max_lat, min_lat
+        if max_lon < min_lon: min_lon, max_lon = max_lon, min_lon
 
         # DEBUGGING:
         #print('(', min_lat, ',', min_lon, '),(', max_lat, ',', max_lon, ')')
@@ -72,4 +69,12 @@ class ViewPicture(View):
         final_pic = self.select_pic(display_pics)
         self.user_seen(user, final_pic)
         return HttpResponseRedirect(static(final_pic.unique_code))
+
+    def post(self, request):
+        print(request.POST)
+        print(__path__)
+        f = open('test.txt', 'w')
+        f.write("hello world")
+        f.close()
+        return
 
