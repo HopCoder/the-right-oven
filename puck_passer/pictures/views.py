@@ -8,7 +8,7 @@ from django.views.generic import View
 import math
 import random
 from django.views.decorators.csrf import csrf_exempt
-import os.path
+import os
 
 random.seed()
 
@@ -71,10 +71,30 @@ class ViewPicture(View):
         return HttpResponseRedirect(static(final_pic.unique_code))
 
     def post(self, request):
-        print(request.POST)
-        print(__path__)
-        f = open('test.txt', 'w')
-        f.write("hello world")
+        f = open('./pictures/static/test.png', 'wb')
+        #for item in request.POST:
+        #    f.write(''.join(format(x, 'b') for x in bytearray(item)))
+        #f.close()
+        line_one = request.readline()
+        #print(line_one)
+        index = line_one.find(b'&')
+        #print('before:')
+        #print(line_one[:index])
+        #print('after:')
+        #print(line_one[index:])
+        
+        try:
+            f.write(line_one[index+1:])
+        except:
+            return HttpResponseNotFound("<h1>No data...</h1>")
+
+        for line in request.readlines():
+            f.write(line)
+
         f.close()
+
+        #print(os.path.dirname(os.path.realpath(__file__)))
+        return HttpResponseNotFound("<h1>finished?</h1>")
+
         return
 
