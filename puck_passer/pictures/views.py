@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from .models import Picture, User
-from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.template import loader, RequestContext
 from django.templatetags.static import static
 from django.core.urlresolvers import reverse
 from django.views.generic import View
 import math
 import random
+import time
 from django.views.decorators.csrf import csrf_exempt
 import os
 
@@ -70,31 +71,38 @@ class ViewPicture(View):
         self.user_seen(user, final_pic)
         return HttpResponseRedirect(static(final_pic.unique_code))
 
-    def post(self, request):
-        f = open('./pictures/static/test.png', 'wb')
-        #for item in request.POST:
-        #    f.write(''.join(format(x, 'b') for x in bytearray(item)))
-        #f.close()
+    def post(self, request, user, lat, lon):
+        # Unique code will be in this format:
+        # [10 digit phone number][time since epoch]
+        # eg: 20128373371427929704
+        # corresponds to my # and 7:08 on April 1st 2015
+        unique_code = user + str(int(time.mktime(time.localtime()))) + '.png'
+
+        new_pic = Picture()
+        new_pic.lat = lat
+        new_pic.lon = lon
+        new_pic.unique_code = unique_code
+        #TODO: add something to identify user to picture
+        new_pic.save()
+
+        f = open('./pictures/static/'+unique_code, 'wb')
         line_one = request.readline()
-        #print(line_one)
         index = line_one.find(b'&')
-        #print('before:')
-        #print(line_one[:index])
-        #print('after:')
-        #print(line_one[index:])
         
         try:
+            if index == -1:
+                raise EOFError('No picture data')
             f.write(line_one[index+1:])
-        except:
-            return HttpResponseNotFound("<h1>No data...</h1>")
+        except EOFError:
+            return HttpResponseNotFound("<h1>No data..."+
+                    " (or incorrect format)</h1>")
 
         for line in request.readlines():
             f.write(line)
 
         f.close()
 
-        #print(os.path.dirname(os.path.realpath(__file__)))
-        return HttpResponseNotFound("<h1>finished?</h1>")
+        return HttpResponse("<h1>Finished Uploading</h1>")
 
         return
 
