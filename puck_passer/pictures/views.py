@@ -85,7 +85,6 @@ class ViewPicture(View):
         new_pic.lon = lon
         new_pic.unique_code = unique_code
         #TODO: add something to identify user to picture
-        new_pic.save()
 
         line_one = request.readline()
         index = line_one.find(b'&')
@@ -99,6 +98,7 @@ class ViewPicture(View):
                 f.write(line)
 
             f.close()
+            new_pic.save()
 
             return HttpResponse("<h1>Finished Uploading</h1>")
        
