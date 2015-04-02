@@ -77,6 +77,8 @@ class ViewPicture(View):
         # eg: 20128373371427929704
         # corresponds to my # and 7:08 on April 1st 2015
         unique_code = user + str(int(time.mktime(time.localtime()))) + '.png'
+        lat = int(lat)/(10**8)
+        lon = int(lon)/(10**8)
 
         new_pic = Picture()
         new_pic.lat = lat
@@ -85,24 +87,22 @@ class ViewPicture(View):
         #TODO: add something to identify user to picture
         new_pic.save()
 
-        f = open('./pictures/static/'+unique_code, 'wb')
         line_one = request.readline()
         index = line_one.find(b'&')
         
         try:
             if index == -1:
                 raise EOFError('No picture data')
+            f = open('./pictures/static/'+unique_code, 'wb')
             f.write(line_one[index+1:])
+            for line in request.readlines():
+                f.write(line)
+
+            f.close()
+
+            return HttpResponse("<h1>Finished Uploading</h1>")
+       
         except EOFError:
             return HttpResponseNotFound("<h1>No data..."+
                     " (or incorrect format)</h1>")
-
-        for line in request.readlines():
-            f.write(line)
-
-        f.close()
-
-        return HttpResponse("<h1>Finished Uploading</h1>")
-
-        return
-
+        
