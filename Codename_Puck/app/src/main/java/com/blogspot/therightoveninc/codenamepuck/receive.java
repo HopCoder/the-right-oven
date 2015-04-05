@@ -1,6 +1,9 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +12,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Display;
-import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -20,6 +21,10 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class receive extends ActionBarActivity {
     public int messageCount = 3;
@@ -28,9 +33,55 @@ public class receive extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.receive);
 
         setDimensions();
+
+        if (messageCount > 0)
+        {
+            // getImage();
+            new GetImageAsyncTask().execute();
+        }
+    }
+
+    private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
+    {
+        private ImageView i;
+        private Bitmap image;
+
+        protected Integer doInBackground(URL... urls) {
+            URL url;
+
+            try
+            {
+                //url = new URL("http://52.10.111.12:8000/static/a.jpg");
+                url = new URL("http://upsilondelts.org/images/bros/thaw.jpg");
+                image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+             //   i.setImageBitmap(image);
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            i = (ImageView) findViewById(R.id.imageView);
+            i.setImageBitmap(image);
+
+            return;
+        }
+
+
+
     }
 
     @Override
@@ -63,21 +114,36 @@ public class receive extends ActionBarActivity {
         }
     }
 
+    private void getImage()
+    {
+        ImageView i = (ImageView) findViewById(R.id.imageView);
+        URL url;
+
+        try
+        {
+            url = new URL("http://52.10.111.12:8000/static/a.jpg");
+            Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+    //        i.setImageBitmap(image);
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setDimensions()
     {
-        // Get Dimensions (measured in pixels)
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-
         // Get Action Bar Height (pixels)
         TypedValue tv = new TypedValue();
         this.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
         int actionBarHeight = getResources().getDimensionPixelSize(tv.resourceId);
 
         // Convert pixels to dp
-        float fl_width = math.convertPixelsToDp(size.x);
-        float fl_height = math.convertPixelsToDp(size.y);
+        float fl_width = math.convertPixelsToDp(phoneSettings.xPixels);
+        float fl_height = math.convertPixelsToDp(phoneSettings.yPixels);
         float fl_actionBarHeight = math.convertPixelsToDp(actionBarHeight);
 
         // Adjust dimensions to have 15 dp margins
@@ -128,6 +194,7 @@ public class receive extends ActionBarActivity {
     public void puckClick(View v)
     {
         Log.e("a", "hi");
+        // send back url
 
         messageDelete();
     }

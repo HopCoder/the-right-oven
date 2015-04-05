@@ -10,6 +10,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
 
@@ -20,6 +22,7 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private Camera theCamera;
     private boolean isPreviewRunning = false;
+
 
     public cameraView(Context context, Camera camera) {
         super(context);
