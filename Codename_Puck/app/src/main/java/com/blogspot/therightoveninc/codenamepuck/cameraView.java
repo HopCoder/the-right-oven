@@ -1,10 +1,17 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
 
@@ -14,6 +21,8 @@ import java.io.IOException;
 public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private Camera theCamera;
+    private boolean isPreviewRunning = false;
+
 
     public cameraView(Context context, Camera camera) {
         super(context);
@@ -52,28 +61,60 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // stop preview before making changes
-        try {
+        if (isPreviewRunning)
+        {
             theCamera.stopPreview();
-        } catch (Exception e){
-            // ignore: tried to stop a non-existent preview
         }
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
+        // fix orientation problems
+        Camera.Parameters parameters = theCamera.getParameters();
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+
+        if(display.getRotation() == Surface.ROTATION_0)
+        {
+            parameters.setPreviewSize(h, w);
+            theCamera.setDisplayOrientation(90);
+        }
+
+        if(display.getRotation() == Surface.ROTATION_90)
+        {
+            parameters.setPreviewSize(w, h);
+        }
+
+        if(display.getRotation() == Surface.ROTATION_180)
+        {
+            parameters.setPreviewSize(h, w);
+        }
+
+        if(display.getRotation() == Surface.ROTATION_270)
+        {
+            parameters.setPreviewSize(w, h);
+            theCamera.setDisplayOrientation(180);
+        }
 
         // start preview with new settings
-        try {
+        previewCamera();
+    }
+
+    public void previewCamera()
+    {
+        try
+        {
             theCamera.setPreviewDisplay(holder);
             theCamera.startPreview();
-
-        } catch (Exception e){
-            Log.d("CameraView: ", "Error starting camera preview: " + e.getMessage());
+            isPreviewRunning = true;
+        }
+        catch(Exception e)
+        {
+            Log.d("previewC", "Cannot start preview", e);
         }
     }
 
     private void releaseCamera(){
         if (theCamera != null){
             theCamera.stopPreview();
+            isPreviewRunning = false;
             theCamera.release();        // release the camera for other applications
             theCamera = null;
         }

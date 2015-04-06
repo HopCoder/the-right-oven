@@ -2,8 +2,10 @@ package com.blogspot.therightoveninc.codenamepuck;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Display;
 
 /**
  * Created by jjgo on 2/21/15.
@@ -16,6 +18,8 @@ public class splash extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.intro);
+
+        getDimensions();
 
         new Handler().postDelayed(new Runnable() {
             /*
@@ -34,5 +38,18 @@ public class splash extends Activity {
                     finish();
                     }
                 }, SPLASH_TIME_OUT);
+
     }
+
+    private void getDimensions()
+    {
+        // Get Dimensions (measured in pixels)
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        phoneSettings.xPixels = size.x;
+        phoneSettings.yPixels = size.y;
+    }
+
+
 }

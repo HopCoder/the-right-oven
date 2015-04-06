@@ -7,9 +7,8 @@
 
     <FrameLayout
         android:id="@+id/camera_preview"
-        android:layout_width="217dp"
-        android:layout_height="299dp"
-        android:layout_above="@+id/button_capture"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
@@ -17,15 +16,38 @@
         android:layout_alignParentStart="true">
 
     </FrameLayout>
+    <ImageView
+        android:id="@+id/upper_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:background="#942CFF"
+        android:src="@drawable/black_cat_empty"/>
 
-    <Button
-        android:id="@+id/button_capture"
-        android:text="Capture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:id="@+id/lower_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="400dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:background="#942CFF">
+
+        <Button
+            android:id="@+id/button_capture"
+            android:text="Capture"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:onClick="onCaptureClick"/>
+
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:onClick="onUploadClick"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
