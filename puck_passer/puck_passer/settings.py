@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pictures',
+    'puck_user',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,20 +59,20 @@ WSGI_APPLICATION = 'puck_passer.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
-# SQLlite
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-# MySQL
-#    'default':{
-#        'ENGINE':'django.db.backends.mysql',
-#        'NAME':'puck',
-#        'USER':'django',
-#        'PASSWORD':'ognajd',
-#        'HOST':'localhost',
-#        'PORT':'3306',
+# SQLlite - Always keep this line commented
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
+# MySQL - Always keep this line commented
+    'default':{
+        'ENGINE':'django.db.backends.mysql',
+        'NAME':'puck',
+        'USER':'django',
+        'PASSWORD':'ognajd',
+        'HOST':'localhost',
+        'PORT':'3306',
+    }
 }
 
 # Internationalization
@@ -92,3 +93,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Template Loaders
+TEMPLATE_LOADERS = (
+    'django.template.loaders.app_directories.Loader',
+)
+

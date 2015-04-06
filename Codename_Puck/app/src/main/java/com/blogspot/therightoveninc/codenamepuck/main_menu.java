@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
+// This may be an obsolete file.
 public class main_menu extends ActionBarActivity {
 
     @Override
