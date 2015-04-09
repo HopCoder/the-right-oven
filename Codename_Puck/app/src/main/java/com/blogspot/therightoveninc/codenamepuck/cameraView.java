@@ -1,7 +1,6 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.Display;
@@ -9,9 +8,6 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import java.io.IOException;
 import java.util.List;

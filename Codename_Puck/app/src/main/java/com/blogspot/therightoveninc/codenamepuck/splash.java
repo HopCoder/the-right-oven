@@ -11,21 +11,13 @@ import android.util.Log;
 import android.view.Display;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.CookieStore;
 import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by jjgo on 2/21/15.
