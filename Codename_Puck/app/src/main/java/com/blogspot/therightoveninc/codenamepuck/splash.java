@@ -3,9 +3,29 @@ package com.blogspot.therightoveninc.codenamepuck;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.CookieStore;
+import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by jjgo on 2/21/15.
@@ -20,6 +40,8 @@ public class splash extends Activity {
         setContentView(R.layout.intro);
 
         getDimensions();
+
+        new GetCookieAsyncTask().execute();
 
         new Handler().postDelayed(new Runnable() {
             /*
@@ -38,17 +60,75 @@ public class splash extends Activity {
                     finish();
                     }
                 }, SPLASH_TIME_OUT);
-
     }
 
+    private class GetCookieAsyncTask extends AsyncTask<URL, Void, Void>
+    {
+        protected Void doInBackground(URL... urls) {
+            try {
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet("http://52.10.111.12:8000/authenticate");
+
+                HttpResponse response = httpclient.execute(httpGet);
+                List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+                BasicCookieStore cookieStore = new BasicCookieStore();
+                if (cookies.size() > 0) {
+                    cookieStore.addCookie(cookies.get(0));
+                    phoneSettings.cookieStore = cookieStore;
+
+                    phoneSettings.cfsr = cookies.get(0).getValue();
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+
+    // Get Dimensions (measured in pixels)
     private void getDimensions()
     {
-        // Get Dimensions (measured in pixels)
+        final DisplayMetrics metrics = new DisplayMetrics();
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         phoneSettings.xPixels = size.x;
         phoneSettings.yPixels = size.y;
+        Method mGetRawH = null, mGetRawW = null;
+
+        try {
+            // For JellyBean 4.2 (API 17) and onward
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                display.getRealMetrics(metrics);
+
+ //               phoneSettings.xPixels = metrics.widthPixels;
+   //             phoneSettings.yPixels = metrics.heightPixels;
+            }
+            // Everything else
+            else {
+                mGetRawH = Display.class.getMethod("getRawHeight");
+                mGetRawW = Display.class.getMethod("getRawWidth");
+
+                try {
+           //         phoneSettings.xPixels = (Integer) mGetRawW.invoke(display);
+             //       phoneSettings.yPixels = (Integer) mGetRawH.invoke(display);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+            //    } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+              //  } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (NoSuchMethodException e3) {
+            e3.printStackTrace();
+        }
+
+        Log.e("F", Integer.toString(phoneSettings.yPixels) + " " + Integer.toString(phoneSettings.xPixels));
     }
 
 
