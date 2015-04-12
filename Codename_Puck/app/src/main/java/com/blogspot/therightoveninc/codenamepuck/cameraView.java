@@ -1,17 +1,12 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import java.io.IOException;
 
@@ -21,8 +16,6 @@ import java.io.IOException;
 public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private Camera theCamera;
-    private boolean isPreviewRunning = false;
-
 
     public cameraView(Context context, Camera camera) {
         super(context);
@@ -40,15 +33,10 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
             theCamera.setPreviewDisplay(holder);
-            theCamera.startPreview();
+            previewCamera();
         } catch (IOException e) {
             Log.d("CameraView: ", "Error setting camera preview: " + e.getMessage());
         }
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
-        releaseCamera();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
@@ -60,63 +48,48 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
             return;
         }
 
-        // stop preview before making changes
-        if (isPreviewRunning)
-        {
-            theCamera.stopPreview();
-        }
-
         // fix orientation problems
         Camera.Parameters parameters = theCamera.getParameters();
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-
-        if(display.getRotation() == Surface.ROTATION_0)
-        {
-            parameters.setPreviewSize(h, w);
-            theCamera.setDisplayOrientation(90);
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        int rotation = windowManager.getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
         }
 
-        if(display.getRotation() == Surface.ROTATION_90)
-        {
-            parameters.setPreviewSize(w, h);
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
         }
-
-        if(display.getRotation() == Surface.ROTATION_180)
-        {
-            parameters.setPreviewSize(h, w);
-        }
-
-        if(display.getRotation() == Surface.ROTATION_270)
-        {
-            parameters.setPreviewSize(w, h);
-            theCamera.setDisplayOrientation(180);
-        }
+        theCamera.setDisplayOrientation(result);
 
         // start preview with new settings
         previewCamera();
     }
 
-    public void previewCamera()
+
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        // empty. Take care of releasing the Camera preview in your activity.
+    }
+
+    private void previewCamera()
     {
         try
         {
             theCamera.setPreviewDisplay(holder);
             theCamera.startPreview();
-            isPreviewRunning = true;
         }
         catch(Exception e)
         {
-            Log.d("previewC", "Cannot start preview", e);
+            Log.d("cameraView:", "Cannot start preview", e);
         }
     }
 
-    private void releaseCamera(){
-        if (theCamera != null){
-            theCamera.stopPreview();
-            isPreviewRunning = false;
-            theCamera.release();        // release the camera for other applications
-            theCamera = null;
-        }
-    }
 }

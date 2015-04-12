@@ -7,10 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -19,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 public class cameraActivity extends Activity{
     private Camera theCamera;
     private cameraView theCameraView;
+    private FrameLayout cameraLayout;
     private boolean cameraBusy = false;
     private byte[] photoPreview;
     private int upperHeight;
@@ -26,14 +29,33 @@ public class cameraActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        releaseCamera();
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
         setContentView(R.layout.camera_view);
         if (!checkCameraHardware(this)){
             return;
         }
         theCamera = getCameraInstance();
+        if (theCamera == null){
+            Log.d("CameraActivity:", "Error null camera!");
+            return;
+        }
         theCameraView = new cameraView(this, theCamera);
-        FrameLayout cameraView = (FrameLayout) findViewById(R.id.camera_preview);
-        cameraView.addView(theCameraView);
+        cameraLayout= (FrameLayout) findViewById(R.id.camera_preview);
+        cameraLayout.addView(theCameraView);
     }
 
     // ensure views are accessed after being loaded
@@ -53,15 +75,6 @@ public class cameraActivity extends Activity{
         lower.getLayoutParams().height = phoneSettings.yPixels - upperHeight - phoneSettings.yPixels;
     }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
-    }
-    @Override
-    protected void onDestroy(){
-        theCamera.release();
-    }
-
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         // this device has a camera
@@ -79,6 +92,15 @@ public class cameraActivity extends Activity{
             // Camera is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable
+    }
+
+
+    private void releaseCamera(){
+        if (theCamera != null){
+            theCamera.stopPreview();
+            theCamera.release();        // release the camera for other applications
+            theCamera = null;
+        }
     }
 
     public void onCaptureClick(View v) {
