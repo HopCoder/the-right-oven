@@ -11,6 +11,14 @@ import time
 from django.views.decorators.csrf import csrf_exempt
 import os
 
+class PuckUp(View):
+    def get(self, request, pic_url):
+        pic = Picture.objects.get(unique_code=pic_url)
+        pic.views_left += 5
+        return HttpResponse("<h1>Great Success!</h1>")
+
+
+
 random.seed()
 
 class ViewPicture(View):
@@ -39,13 +47,12 @@ class ViewPicture(View):
         #print('(', min_lat, ',', min_lon, '),(', max_lat, ',', max_lon, ')')
 
         photos = Picture.objects.filter(lat__lte=max_lat, lat__gte=min_lat,
-                                        lon__lte=max_lon, lon__gte=min_lon)
+                                        lon__lte=max_lon, lon__gte=min_lon,
+                                        views_left__gt=0)
         return photos
     
     def filter_list(self, user, photos):
-        # TODO: still need to add logic for filtering out if user has already seen
-        # I think we might be able to do it in the filter, in which case it will
-        # probably be faster.  Try that first
+        photos.exclude(users_seen__number=user)
         return
 
     def select_pic(self, photos):
@@ -54,7 +61,12 @@ class ViewPicture(View):
         return photos[random.randint(0,len(photos)-1)]
 
     def user_seen(self, user, photo):
-        # TODO: add user to the list of people that have seen this picture
+        try:
+            viewer = User.objects.get(number=user)
+        except:
+            viewer = User(number=user)
+            viewer.save()
+        photo.users_seen.add(viewer)
         return
 
     def get(self, request, user, lat, lon, dist):
@@ -79,12 +91,20 @@ class ViewPicture(View):
         unique_code = user + str(int(time.mktime(time.localtime()))) + '.png'
         lat = int(lat)/(10**8)
         lon = int(lon)/(10**8)
+        user = int(user)
 
         new_pic = Picture()
         new_pic.lat = lat
         new_pic.lon = lon
         new_pic.unique_code = unique_code
-        #TODO: add something to identify user to picture
+        # something to identify user to picture
+        try:
+            poster = User.objects.get(number=user)
+        except:
+            poster = User(number=user)
+            poster.save()
+
+        new_pic.poster = poster
 
         line_one = request.readline()
         index = line_one.find(b'&')

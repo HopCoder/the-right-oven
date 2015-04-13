@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from pictures.views import ViewPicture
+from pictures.views import ViewPicture, PuckUp
 from puck_user.views import PuckUser
 
 urlpatterns = patterns('',
@@ -16,5 +16,7 @@ urlpatterns = patterns('',
     url(r'^post/(?P<user>\d{10})/(?P<lat>\d+)/(?P<lon>\d+)/$',
                 ViewPicture.as_view()),
     url(r'^authenticate/$',PuckUser.as_view()),
+    url(r'^puck_up/(?P<pic_url>[a-zA-Z0-9_. ,]*)/$', PuckUp.as_view()),
+
     #url(r'^view/(?P<user>\d{10})/(?P<lat>\d+)/(?P<lon>\d+)/(?P<dist>\d{2})/$', include(admin.site.urls)),
 )
