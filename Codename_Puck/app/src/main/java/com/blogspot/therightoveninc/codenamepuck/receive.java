@@ -1,6 +1,7 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -29,6 +31,9 @@ import java.net.URL;
 public class receive extends ActionBarActivity {
     public int messageCount = 3;
     private PopupWindow popupWindow;
+    private Bitmap bitmap;
+    private ImageView imageView;
+    private URL url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,31 +45,25 @@ public class receive extends ActionBarActivity {
 
         if (messageCount > 0)
         {
-            // getImage();
             new GetImageAsyncTask().execute();
         }
     }
 
+    // ensure views are accessed after being loaded
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus){
+        imageView = (ImageView)findViewById(R.id.imageView);
+    }
+
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
     {
-        private ImageView i;
-        private Bitmap image;
-
         protected Integer doInBackground(URL... urls) {
-            URL url;
-
             try
             {
-                //url = new URL("http://52.10.111.12:8000/static/a.jpg");
-                url = new URL("http://upsilondelts.org/images/bros/thaw.jpg");
-                image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-             //   i.setImageBitmap(image);
+                url = new URL("http://emilines.com/wp-content/uploads/2014/10/beautiful-celebrity-hd-wallpapers.jpg");
             }
             catch (MalformedURLException e)
             {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -74,10 +73,72 @@ public class receive extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            i = (ImageView) findViewById(R.id.imageView);
-            i.setImageBitmap(image);
+            new DecodeSampledBitmapFromStream().execute();
+        }
+    }
 
-            return;
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
+    {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    private class DecodeSampledBitmapFromStream extends AsyncTask<URL, Void, Integer>
+    {
+        protected Integer doInBackground(URL... urls)
+        {
+            ViewGroup.LayoutParams imageParams = imageView.getLayoutParams();
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            try {
+                BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+                Log.e("zz","herro");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, imageParams.width, imageParams.height);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            try {
+                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+                Log.e("kk","crt");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            imageView.setImageBitmap(bitmap);
         }
     }
 
@@ -108,26 +169,6 @@ public class receive extends ActionBarActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void getImage()
-    {
-        ImageView i = (ImageView) findViewById(R.id.imageView);
-        URL url;
-
-        try
-        {
-            url = new URL("http://52.10.111.12:8000/static/a.jpg");
-            Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-    //        i.setImageBitmap(image);
-        }
-        catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
