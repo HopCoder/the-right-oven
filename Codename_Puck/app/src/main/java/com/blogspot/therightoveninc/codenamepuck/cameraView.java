@@ -3,6 +3,7 @@ package com.blogspot.therightoveninc.codenamepuck;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -63,7 +64,6 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         Log.e("q", Integer.toString(optimalSize.width));
         Log.e("q", Integer.toString(optimalSize.height));
 
-
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setPictureSize(optimalSize.width, optimalSize.height);
         theCamera.setParameters(parameters);
@@ -82,30 +82,6 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
         }
 
-/*
-
-        if(display.getRotation() == Surface.ROTATION_0)
-        {
-            parameters.setPreviewSize(optimalSize.height, optimalSize.width);
-            theCamera.setDisplayOrientation(90);
-        }
-
-        if(display.getRotation() == Surface.ROTATION_90)
-        {
-            parameters.setPreviewSize(optimalSize.width, optimalSize.height);
-        }
-
-        if(display.getRotation() == Surface.ROTATION_180)
-        {
-            parameters.setPreviewSize(optimalSize.height, optimalSize.width);
-        }
-
-        if(display.getRotation() == Surface.ROTATION_270)
-        {
-            parameters.setPreviewSize(optimalSize.width, optimalSize.height);
-            theCamera.setDisplayOrientation(180);
-        }
-*/
         Camera.CameraInfo info = new Camera.CameraInfo();
         int rotation = windowManager.getDefaultDisplay().getRotation();
         int degrees = 0;
@@ -120,10 +96,11 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
             result = (360 - result) % 360;  // compensate the mirror
+            theCamera.setDisplayOrientation(result);
+
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
-        theCamera.setDisplayOrientation(result);
 
         // start preview with new settings
         previewCamera();
@@ -150,7 +127,6 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
     private void releaseCamera(){
         if (theCamera != null){
             theCamera.stopPreview();
-            isPreviewRunning = false;
             theCamera.release();        // release the camera for other applications
             theCamera = null;
         }

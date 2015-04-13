@@ -60,14 +60,14 @@ public class cameraActivity extends Activity{
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-
-
     }
+
     @Override
     protected void onPause(){
         super.onPause();
         releaseCamera();
     }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();
