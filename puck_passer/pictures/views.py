@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Picture, User
+from .models import Picture, User, Comment
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.template import loader, RequestContext
 from django.templatetags.static import static
@@ -52,8 +52,8 @@ class ViewPicture(View):
         return photos
     
     def filter_list(self, user, photos):
-        photos.exclude(users_seen__number=user)
-        return
+        photos = photos.exclude(users_seen__number=user)
+        return photos
 
     def select_pic(self, photos):
         # how to sort list? right now just choose the first one
@@ -67,6 +67,7 @@ class ViewPicture(View):
             viewer = User(number=user)
             viewer.save()
         photo.users_seen.add(viewer)
+        photo.views_left -= 1
         return
 
     def get(self, request, user, lat, lon, dist):
@@ -76,7 +77,7 @@ class ViewPicture(View):
         dist = int(dist)
         user = int(user)
         display_pics = self.get_range(lat, lon, dist)
-        self.filter_list(user, display_pics)
+        display_pics = self.filter_list(user, display_pics)
         if len(display_pics) == 0:
             return HttpResponseNotFound("<h1>No more pictures</h1>")
         final_pic = self.select_pic(display_pics)
@@ -125,4 +126,18 @@ class ViewPicture(View):
         except EOFError:
             return HttpResponseNotFound("<h1>No data..."+
                     " (or incorrect format)</h1>")
-        
+       
+class ViewComments(View):
+    def get(self, request, pic_url):
+        comment_list = Comment.objects.filter(pic__unique_code=pic_url)
+        comment_list.order_by('order')
+        template = loader.get_template('comments.html')
+        context = RequestContext(request, {
+                    'comment_list':comment_list,
+                })
+        return HttpResponse(template.render(context))
+
+    def post(self, request, pic_url):
+
+        pass
+
