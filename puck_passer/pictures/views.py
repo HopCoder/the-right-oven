@@ -138,6 +138,20 @@ class ViewComments(View):
         return HttpResponse(template.render(context))
 
     def post(self, request, pic_url):
+        try:
+            comments = Comment.objects.filter(pic__unique_code=pic_url)
+            comments.order_by('order')
+            number = comments[-1].order + 1
+        except:
+            number = 1
 
-        pass
+        try:
+            new_comment = Comment(comment=request.POST['comment'], order=number,
+                              pic=Picture.objects.get(unique_code=pic_url))
+        except Exception as err:
+            print(err)
+            return HttpResponse("<h1>Comment Upload Failed</h1>")
+
+        new_comment.save()
+        return HttpResponse("<h1>Done</h1>") 
 
