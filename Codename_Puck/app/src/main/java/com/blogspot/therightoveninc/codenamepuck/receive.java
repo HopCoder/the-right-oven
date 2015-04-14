@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
@@ -31,8 +30,7 @@ import java.net.URL;
 public class receive extends ActionBarActivity {
     public int messageCount = 3;
     private PopupWindow popupWindow;
-    private Bitmap bitmap;
-    private ImageView imageView;
+    private ImageButton imageButton;
     private URL url;
 
     @Override
@@ -42,17 +40,17 @@ public class receive extends ActionBarActivity {
         setContentView(R.layout.receive);
 
         setDimensions();
-
-        if (messageCount > 0)
-        {
-            new GetImageAsyncTask().execute();
-        }
     }
 
     // ensure views are accessed after being loaded
     @Override
     public void onWindowFocusChanged(boolean hasFocus){
-        imageView = (ImageView)findViewById(R.id.imageView);
+        imageButton = (ImageButton)findViewById(R.id.imageButton);
+
+        if (messageCount > 0)
+        {
+            new GetImageAsyncTask().execute();
+        }
     }
 
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
@@ -77,41 +75,17 @@ public class receive extends ActionBarActivity {
         }
     }
 
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
-    {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-
-        return inSampleSize;
-    }
-
     private class DecodeSampledBitmapFromStream extends AsyncTask<URL, Void, Integer>
     {
         protected Integer doInBackground(URL... urls)
         {
-            ViewGroup.LayoutParams imageParams = imageView.getLayoutParams();
+            ViewGroup.LayoutParams imageParams = imageButton.getLayoutParams();
 
             // First decode with inJustDecodeBounds=true to check dimensions
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             try {
                 BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
-                Log.e("zz","herro");
             }
             catch (Exception e)
             {
@@ -119,13 +93,12 @@ public class receive extends ActionBarActivity {
             }
 
             // Calculate inSampleSize
-            options.inSampleSize = calculateInSampleSize(options, imageParams.width, imageParams.height);
+            options.inSampleSize = math.calculateInSampleSize(options, imageParams.width, imageParams.height);
 
             // Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false;
             try {
-                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
-                Log.e("kk","crt");
+                phoneSettings.currentBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
             }
             catch (Exception e)
             {
@@ -138,7 +111,7 @@ public class receive extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            imageView.setImageBitmap(bitmap);
+            imageButton.setImageBitmap(phoneSettings.currentBitmap);
         }
     }
 
@@ -199,7 +172,7 @@ public class receive extends ActionBarActivity {
         int spacer_width = (int)math.convertDpToPixel(fl_spacer_width);
 
         // Set picture dimensions
-        ImageView image = (ImageView) findViewById(R.id.imageView);
+        ImageButton image = (ImageButton) findViewById(R.id.imageButton);
         ViewGroup.LayoutParams imageParams = image.getLayoutParams();
         imageParams.width = pic_size;
         imageParams.height = pic_size;
@@ -225,7 +198,7 @@ public class receive extends ActionBarActivity {
         View linearLayout = findViewById(R.id.linear_layout);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(button_margin,spacerParams.width/2,0,0);
-        params.addRule(RelativeLayout.BELOW, R.id.imageView);
+        params.addRule(RelativeLayout.BELOW, R.id.imageButton);
         linearLayout.setLayoutParams(params);
     }
 
@@ -244,6 +217,12 @@ public class receive extends ActionBarActivity {
         messageDelete();
     }
 
+    public void commentClick(View v)
+    {
+        Intent i = new Intent(this, comment.class);
+        startActivity(i);
+    }
+
     // Popup code (mostly) starts here
     public void reportClick()
     {
@@ -258,7 +237,7 @@ public class receive extends ActionBarActivity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
-    public void  reportConfirmClick(View v)
+    public void reportConfirmClick(View v)
     {
         // TODO: add user report logic here
 
