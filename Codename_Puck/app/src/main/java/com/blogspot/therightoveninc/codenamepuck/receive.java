@@ -79,9 +79,6 @@ public class receive extends ActionBarActivity {
 
             return;
         }
-
-
-
     }
 
     @Override

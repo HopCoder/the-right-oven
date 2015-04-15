@@ -3,12 +3,14 @@ package com.blogspot.therightoveninc.codenamepuck;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Timothy D. Mahon on 3/1/2015.
@@ -51,6 +53,35 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         // fix orientation problems
         Camera.Parameters parameters = theCamera.getParameters();
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
+        for (Camera.Size size : sizes)
+        {
+            Log.e("A", Integer.toString(size.width) + " " + Integer.toString(size.height));
+        }
+        Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+        Log.e("x", Integer.toString(w) + " " + Integer.toString(h));
+        Log.e("q", Integer.toString(optimalSize.width));
+        Log.e("q", Integer.toString(optimalSize.height));
+
+        parameters.setPreviewSize(optimalSize.width, optimalSize.height);
+        parameters.setPictureSize(optimalSize.width, optimalSize.height);
+        theCamera.setParameters(parameters);
+
+        switch(display.getRotation())
+        {
+            case Surface.ROTATION_0:
+                theCamera.setDisplayOrientation(90);
+                break;
+            case Surface.ROTATION_90:
+                break;
+            case Surface.ROTATION_180:
+                break;
+            case Surface.ROTATION_270:
+                theCamera.setDisplayOrientation(180);
+                break;
+        }
+
         Camera.CameraInfo info = new Camera.CameraInfo();
         int rotation = windowManager.getDefaultDisplay().getRotation();
         int degrees = 0;
@@ -65,10 +96,11 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
             result = (360 - result) % 360;  // compensate the mirror
+            theCamera.setDisplayOrientation(result);
+
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
-        theCamera.setDisplayOrientation(result);
 
         // start preview with new settings
         previewCamera();
@@ -92,4 +124,45 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    private void releaseCamera(){
+        if (theCamera != null){
+            theCamera.stopPreview();
+            theCamera.release();        // release the camera for other applications
+            theCamera = null;
+        }
+    }
+
+    private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.05;
+        double targetRatio = (double) 3/4;
+
+        if (sizes==null) return null;
+
+        Camera.Size optimalSize = null;
+
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Find size
+        for (Camera.Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
 }
