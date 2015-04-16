@@ -129,10 +129,12 @@ public class viewActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            if (result == -1)
-            {
+            if (result == -1) {
                 imageButton.setBackgroundColor(Color.parseColor("#000000"));
                 imageButton.setImageResource(android.R.color.holo_red_dark);
+                if (null != phoneSettings.redirectedReceive) {
+                    phoneSettings.redirectedReceive = null;
+                }
             }
             else
             {
