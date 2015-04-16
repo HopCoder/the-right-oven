@@ -85,11 +85,15 @@ public class viewActivity extends ActionBarActivity {
             }
             catch(FileNotFoundException e)
             {
+                e.printStackTrace();
                 // no more files
                 return -1;
             }
             catch(IOException e)
-            {}
+            {
+                e.printStackTrace();
+                return -1;
+            }
 
             // Calculate inSampleSize
             options.inSampleSize = math.calculateInSampleSize(options, imageParams.width, imageParams.height);
@@ -113,6 +117,7 @@ public class viewActivity extends ActionBarActivity {
             if (result == -1)
             {
                 imageButton.setBackgroundColor(Color.parseColor("#000000"));
+                imageButton.setImageResource(android.R.color.holo_red_dark);
             }
             else
             {
@@ -143,7 +148,6 @@ public class viewActivity extends ActionBarActivity {
                 HttpGet httpGet = new HttpGet(puck_string);
                 HttpResponse response = httpclient.execute(httpGet);
 
-
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -171,8 +175,10 @@ public class viewActivity extends ActionBarActivity {
 
     public void commentClick(View v)
     {
-        Intent i = new Intent(this, comment.class);
-        startActivity(i);
+        if(null != phoneSettings.redirectedReceive) {
+            Intent i = new Intent(this, comment.class);
+            startActivity(i);
+        }
     }
 
     // Popup code (mostly) starts here
@@ -209,6 +215,8 @@ public class viewActivity extends ActionBarActivity {
 
     private void messageDelete()
     {
+        phoneSettings.redirectedReceive = null;
+
         new GetImageAsyncTask().execute();
     }
 }
