@@ -17,6 +17,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.ByteArrayBuffer;
+import org.apache.http.util.EntityUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,18 +38,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.ByteArrayBuffer;
-import org.apache.http.util.EntityUtils;
-import java.io.ByteArrayOutputStream;
 
 /**
  * Created by Timothy D. Mahon on 2/28/2015.
@@ -194,7 +195,7 @@ public class cameraActivity extends Activity{
             new UploadPhotoAsyncTask().execute();
 
             cameraBusy = false;
-            theCamera.startPreview();
+//            theCamera.startPreview();
         }
     }
 
@@ -276,7 +277,7 @@ public class cameraActivity extends Activity{
             } catch (IOException e) {
                 Log.d("e", "Error accessing file: " + e.getMessage());
             }
-
+            camera.startPreview();
             return;
         }
     };
@@ -286,7 +287,7 @@ public class cameraActivity extends Activity{
         // using Environment.getExternalStorageState() before doing this.
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                Environment.DIRECTORY_PICTURES), "Puck");
 
 
         // This location works best if you want the created images to be shared

@@ -28,16 +28,17 @@
         android:layout_width="fill_parent"
         android:layout_height="400dp"
         android:layout_alignParentBottom="true"
-        android:background="#942CFF"/>
+        android:background="#942CFF"
+        android:layout_alignTop="@+id/button_upload" />
 
     <Button
         android:id="@+id/button_capture"
         android:text="Capture"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:onClick="onCaptureClick"/>
+        android:onClick="onCaptureClick"
+        android:layout_alignTop="@+id/lower_overlay"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/button_upload"
@@ -46,5 +47,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
-        android:onClick="onUploadClick"/>
+        android:onClick="onUploadClick"
+        android:text="upload" />
 </RelativeLayout>
