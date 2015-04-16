@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -21,14 +22,20 @@ import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class receive extends ActionBarActivity {
-    public int messageCount = 3;
     private PopupWindow popupWindow;
     private ImageButton imageButton;
     private URL url;
@@ -40,25 +47,30 @@ public class receive extends ActionBarActivity {
         setContentView(R.layout.receive);
 
         setDimensions();
+
+        imageButton = (ImageButton)findViewById(R.id.imageButton);
+
+        new GetImageAsyncTask().execute();
     }
 
-    // ensure views are accessed after being loaded
+  /*  // ensure views are accessed after being loaded
     @Override
     public void onWindowFocusChanged(boolean hasFocus){
         imageButton = (ImageButton)findViewById(R.id.imageButton);
 
-        if (messageCount > 0)
-        {
+        if(null == phoneSettings.redirectedReceive) {
             new GetImageAsyncTask().execute();
         }
     }
-
+*/
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
     {
         protected Integer doInBackground(URL... urls) {
             try
             {
-                url = new URL("http://emilines.com/wp-content/uploads/2014/10/beautiful-celebrity-hd-wallpapers.jpg");
+                //url = new URL("http://emilines.com/wp-content/uploads/2014/10/beautiful-celebrity-hd-wallpapers.jpg");
+                url = new URL("http://52.10.111.12:8000/view/5036792514/69/34/10/");
+            //    url = new URL("http://192.168.1.120:8000/view/5036792514/69/34/10/");
             }
             catch (MalformedURLException e)
             {
@@ -77,6 +89,8 @@ public class receive extends ActionBarActivity {
 
     private class DecodeSampledBitmapFromStream extends AsyncTask<URL, Void, Integer>
     {
+        HttpURLConnection urlConnection;
+        InputStream is;
         protected Integer doInBackground(URL... urls)
         {
             ViewGroup.LayoutParams imageParams = imageButton.getLayoutParams();
@@ -85,12 +99,19 @@ public class receive extends ActionBarActivity {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             try {
-                BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setInstanceFollowRedirects(true);
+                is = urlConnection.getInputStream();
+                phoneSettings.redirectedReceive = urlConnection.getURL();
+                BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
             }
-            catch (Exception e)
+            catch(FileNotFoundException e)
             {
-                e.printStackTrace();
+                // no more files
+                return -1;
             }
+            catch(IOException e)
+            {}
 
             // Calculate inSampleSize
             options.inSampleSize = math.calculateInSampleSize(options, imageParams.width, imageParams.height);
@@ -98,7 +119,7 @@ public class receive extends ActionBarActivity {
             // Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false;
             try {
-                phoneSettings.currentBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+                phoneSettings.currentBitmap = BitmapFactory.decodeStream(phoneSettings.redirectedReceive.openConnection().getInputStream(), null, options);
             }
             catch (Exception e)
             {
@@ -111,7 +132,15 @@ public class receive extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            imageButton.setImageBitmap(phoneSettings.currentBitmap);
+            if (result == -1)
+            {
+                imageButton.setBackgroundColor(Color.parseColor("#000000"));
+            }
+            else
+            {
+                imageButton.setBackgroundColor(Color.parseColor("#942CFF"));
+                imageButton.setImageBitmap(phoneSettings.currentBitmap);
+            }
         }
     }
 
@@ -205,9 +234,40 @@ public class receive extends ActionBarActivity {
     public void puckClick(View v)
     {
         Log.e("a", "hi");
-        // send back url
 
-        messageDelete();
+        new PuckItAsyncTask().execute();
+    }
+
+    private class PuckItAsyncTask extends AsyncTask<URL, Void, Integer>
+    {
+        @Override
+        protected Integer doInBackground(URL... urls) {
+            try {
+
+                String puck_string = phoneSettings.redirectedReceive.toString().replace("static", "puck_up");
+                URL u = new URL(puck_string);
+
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(puck_string);
+                HttpResponse response = httpclient.execute(httpGet);
+
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            messageDelete();
+        }
     }
 
     public void shuckClick(View v)
@@ -257,12 +317,6 @@ public class receive extends ActionBarActivity {
 
     private void messageDelete()
     {
-        messageCount -= 1;
-
-        if (messageCount <= 0)
-        {
-            setContentView(R.layout.intro);
-        }
+        new GetImageAsyncTask().execute();
     }
-
 }

@@ -60,9 +60,6 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
             Log.e("A", Integer.toString(size.width) + " " + Integer.toString(size.height));
         }
         Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
-        Log.e("x", Integer.toString(w) + " " + Integer.toString(h));
-        Log.e("q", Integer.toString(optimalSize.width));
-        Log.e("q", Integer.toString(optimalSize.height));
 
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         parameters.setPictureSize(optimalSize.width, optimalSize.height);

@@ -151,7 +151,6 @@ public class cameraActivity extends Activity{
         return c; // returns null if camera is unavailable
     }
 
-
     private void releaseCamera(){
         if (theCamera != null){
             theCamera.stopPreview();
@@ -203,7 +202,7 @@ public class cameraActivity extends Activity{
         protected Void doInBackground(URL... urls) {
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(postUrl);
-
+/*
             HttpContext localContext = new BasicHttpContext();
             localContext.setAttribute(ClientContext.COOKIE_STORE, phoneSettings.cookieStore);
 
@@ -215,18 +214,18 @@ public class cameraActivity extends Activity{
             param = param.concat("&");
             Log.e("qwer",param);
             byte[] postData = param.getBytes(Charset.forName("UTF-8"));
+*/
+            ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length);
 
-            ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length + param.length());
-            byteArrayBuffer.append(postData, 0, postData.length);
+         //   byteArrayBuffer.append(postData, 0, postData.length);
             byteArrayBuffer.append(croppedPhoto, 0, croppedPhoto.length);
-
             Log.e("zxcv", byteArrayBuffer.toByteArray().toString());
 
-            httpPost.setEntity(new ByteArrayEntity(byteArrayBuffer.toByteArray()));
+            httpPost.setEntity(new ByteArrayEntity(croppedPhoto));
             try {
-                HttpResponse response = httpClient.execute(httpPost, localContext);
+                HttpResponse response = httpClient.execute(httpPost);
                 String result = EntityUtils.toString(response.getEntity());
-                Log.e("yyy", phoneSettings.cookieStore.toString());
+                //Log.e("yyy", phoneSettings.cookieStore.toString());
                 int x = 0;
                 for (x =0; x< result.length()/500; x = x+1)
                 {
@@ -264,7 +263,7 @@ public class cameraActivity extends Activity{
                 Log.d("a", "Error creating media file, check storage permissions: ");
                 return;
             }
-
+/*
             try {
                 Log.e("q","hi");
                 FileOutputStream fos = new FileOutputStream(pictureFile);
@@ -276,7 +275,7 @@ public class cameraActivity extends Activity{
             } catch (IOException e) {
                 Log.d("e", "Error accessing file: " + e.getMessage());
             }
-
+*/
             return;
         }
     };
@@ -287,7 +286,6 @@ public class cameraActivity extends Activity{
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyCameraApp");
-
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
