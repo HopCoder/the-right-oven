@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,20 +23,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -163,7 +158,7 @@ public class cameraActivity extends Activity{
 
     public void onCaptureClick(View v) {
         if (!cameraBusy) {
-            theCamera.takePicture(null, null, mPicture);
+            theCamera.takePicture(shutter, null, mPicture);
             cameraBusy = true;
         }
     }
@@ -205,31 +200,19 @@ public class cameraActivity extends Activity{
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(postUrl);
 
-            HttpContext localContext = new BasicHttpContext();
-            localContext.setAttribute(ClientContext.COOKIE_STORE, phoneSettings.cookieStore);
 
-            httpPost.addHeader("csrftoken", phoneSettings.cfsr);
-            httpPost.addHeader("csrfmiddlewaretoken", phoneSettings.cfsr);
-
-            String param = "csrfmiddlewaretoken=";
-            param = param.concat(phoneSettings.cookieStore.getCookies().get(0).getValue());
-            param = param.concat("&");
-            Log.e("qwer",param);
-            byte[] postData = param.getBytes(Charset.forName("UTF-8"));
-
-            ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length + param.length());
-            byteArrayBuffer.append(postData, 0, postData.length);
+            ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length);
             byteArrayBuffer.append(croppedPhoto, 0, croppedPhoto.length);
 
             Log.e("zxcv", byteArrayBuffer.toByteArray().toString());
 
-            httpPost.setEntity(new ByteArrayEntity(byteArrayBuffer.toByteArray()));
+            httpPost.setEntity(new ByteArrayEntity(croppedPhoto));
             try {
-                HttpResponse response = httpClient.execute(httpPost, localContext);
+                HttpResponse response = httpClient.execute(httpPost);
                 String result = EntityUtils.toString(response.getEntity());
-                Log.e("yyy", phoneSettings.cookieStore.toString());
+//                Log.e("yyy", phoneSettings.cookieStore.toString());
                 int x = 0;
-                for (x =0; x< result.length()/500; x = x+1)
+                for (; x< result.length()/500; x = x+1)
                 {
                     Log.e("o",result.substring(x*500,(x+1)*500));
                 }
@@ -249,6 +232,14 @@ public class cameraActivity extends Activity{
         }
     }
 
+    Camera.ShutterCallback shutter = new Camera.ShutterCallback() {
+        @Override
+        public void onShutter() {
+            AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            mgr.playSoundEffect(AudioManager.FLAG_PLAY_SOUND);
+        }
+    };
+
     Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
@@ -265,7 +256,7 @@ public class cameraActivity extends Activity{
                 Log.d("a", "Error creating media file, check storage permissions: ");
                 return;
             }
-
+            /*
             try {
                 Log.e("q","hi");
                 FileOutputStream fos = new FileOutputStream(pictureFile);
@@ -276,8 +267,8 @@ public class cameraActivity extends Activity{
                 Log.d("e", "File not found: " + e.getMessage());
             } catch (IOException e) {
                 Log.d("e", "Error accessing file: " + e.getMessage());
-            }
-            camera.startPreview();
+            }*/
+
             return;
         }
     };
