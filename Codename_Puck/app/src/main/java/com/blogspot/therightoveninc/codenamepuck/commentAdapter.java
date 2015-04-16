@@ -37,6 +37,7 @@ public class commentAdapter extends ArrayAdapter<String> {
         TextView textView = (TextView) rowView.findViewById(R.id.textView);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
         LinearLayout linearLayout = (LinearLayout) rowView.findViewById(R.id.newComment);
+        LinearLayout commentSection = (LinearLayout) rowView.findViewById(R.id.commentSection);
         textView.setText(values[position]);
 
         ViewGroup.LayoutParams params;
@@ -44,7 +45,7 @@ public class commentAdapter extends ArrayAdapter<String> {
         if (values[position].equals("secretString"))
         {
             imageView.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.GONE);
+            commentSection.setVisibility(View.GONE);
             linearLayout.setVisibility(View.GONE);
 
             params = imageView.getLayoutParams();
@@ -56,13 +57,13 @@ public class commentAdapter extends ArrayAdapter<String> {
         else if (values[position].equals("theEndString"))
         {
             imageView.setVisibility(View.GONE);
-            textView.setVisibility(View.GONE);
+            commentSection.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
         }
         else
         {
             imageView.setVisibility(View.GONE);
-            textView.setVisibility(View.VISIBLE);
+            commentSection.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
 
             EditText editText = (EditText) rowView.findViewById(R.id.editText);

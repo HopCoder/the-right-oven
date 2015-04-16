@@ -190,7 +190,7 @@ public class cameraActivity extends Activity{
             new UploadPhotoAsyncTask().execute();
 
             cameraBusy = false;
-//            theCamera.startPreview();
+            theCamera.startPreview();
         }
     }
 
