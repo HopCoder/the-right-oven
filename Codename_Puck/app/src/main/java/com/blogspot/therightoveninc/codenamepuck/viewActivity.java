@@ -144,8 +144,6 @@ public class viewActivity extends ActionBarActivity {
 
     public void puckClick(View v)
     {
-        Log.e("a", "hi");
-
         new PuckItAsyncTask().execute();
     }
 
@@ -183,8 +181,6 @@ public class viewActivity extends ActionBarActivity {
 
     public void shuckClick(View v)
     {
-        Log.e("a", "shuck that!");
-
         messageDelete();
     }
 

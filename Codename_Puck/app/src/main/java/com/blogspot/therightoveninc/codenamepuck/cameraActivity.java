@@ -206,8 +206,6 @@ public class cameraActivity extends Activity{
             ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length);
             byteArrayBuffer.append(croppedPhoto, 0, croppedPhoto.length);
 
-            Log.e("zxcv", byteArrayBuffer.toByteArray().toString());
-
             httpPost.setEntity(new ByteArrayEntity(croppedPhoto));
             try {
                 HttpResponse response = httpClient.execute(httpPost);

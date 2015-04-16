@@ -55,10 +55,6 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
-        for (Camera.Size size : sizes)
-        {
-            Log.e("A", Integer.toString(size.width) + " " + Integer.toString(size.height));
-        }
         Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
 
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);

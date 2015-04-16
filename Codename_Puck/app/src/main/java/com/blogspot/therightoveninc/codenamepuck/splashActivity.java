@@ -130,8 +130,6 @@ public class splashActivity extends Activity {
         } catch (NoSuchMethodException e3) {
             e3.printStackTrace();
         }
-
-        Log.e("F", Integer.toString(phoneSettings.yPixels) + " " + Integer.toString(phoneSettings.xPixels));
     }
 
 
