@@ -22,7 +22,7 @@ public class phoneSettings {
 
     public static Cookie cookie;
     public static String cfsr;
-
+    public static String phoneNum;
     public static String postUrl;
 
   //  public static String postUrl = "http://192.168.1.120:8000/post/5036792514/69/34/";

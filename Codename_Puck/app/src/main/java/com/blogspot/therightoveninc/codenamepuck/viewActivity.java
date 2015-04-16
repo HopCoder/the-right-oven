@@ -48,7 +48,7 @@ public class viewActivity extends ActionBarActivity {
         protected Integer doInBackground(URL... urls) {
             try
             {
-                url = new URL("http://52.10.111.12:8000/view/5036792533/69/34/10/");
+                url = new URL("http://52.10.111.12:8000/view/" + phoneSettings.phoneNum + "/69/34/10/");
             }
             catch (MalformedURLException e)
             {
@@ -134,7 +134,8 @@ public class viewActivity extends ActionBarActivity {
         @Override
         protected Integer doInBackground(URL... urls) {
             try {
-
+                if (phoneSettings.redirectedReceive == null)
+                    return null;
                 String puck_string = phoneSettings.redirectedReceive.toString().replace("static", "puck_up");
                 URL u = new URL(puck_string);
 

@@ -53,9 +53,11 @@ public class comment extends ActionBarActivity {
         @Override
         protected Integer doInBackground(URL... urls)
         {
-            commentString = phoneSettings.redirectedReceive.toString();
-            if (commentString == null)
+            if (phoneSettings.redirectedReceive == null) {
+                commentString = null;
                 return null;
+            }
+            commentString = phoneSettings.redirectedReceive.toString();
             commentString = commentString.concat("/comments/");
             commentString = commentString.replace("/static","");
             try {
@@ -127,6 +129,9 @@ public class comment extends ActionBarActivity {
     public class PostCommentAsyncTask extends AsyncTask<URL,Void,Void>
     {
         protected Void doInBackground(URL... urls) {
+            if (commentString == null){
+                return null;
+            }
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(commentString);
 
