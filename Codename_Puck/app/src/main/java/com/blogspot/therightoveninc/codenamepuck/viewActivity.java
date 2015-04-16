@@ -39,8 +39,23 @@ public class viewActivity extends ActionBarActivity {
         setContentView(R.layout.view);
 
         imageButton = (ImageButton)findViewById(R.id.imageButton);
+    }
 
-        new GetImageAsyncTask().execute();
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // Do we need a new photo or do we already have one?
+        if (null == phoneSettings.redirectedReceive)
+        {
+            new GetImageAsyncTask().execute();
+        }
+        else
+        {
+            imageButton.setBackgroundColor(Color.parseColor("#942CFF"));
+            imageButton.setImageBitmap(phoneSettings.currentBitmap);
+        }
     }
 
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
