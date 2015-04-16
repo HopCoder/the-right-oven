@@ -6,16 +6,15 @@
     android:background="#942CFF">
     <!--android:background="#942CFF"-->
 
-    <ImageView
+    <ImageButton
         android:layout_width="match_parent"
         android:layout_height="170pt"
-        android:id="@+id/imageView"
+        android:id="@+id/imageButton"
         android:background="#000000"
+        android:onClick="commentClick"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_above="@+id/puck_button" />
 
     <Button
@@ -24,10 +23,9 @@
         android:layout_height="wrap_content"
         android:text="Puck It"
         android:onClick="puckClick"
-        android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView"
         android:layout_alignParentBottom="true"
-        android:layout_alignTop="@+id/comment_button" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/shuck_button"
@@ -35,32 +33,9 @@
         android:layout_height="wrap_content"
         android:text="Shuck it"
         android:onClick="shuckClick"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/puck_button"
-        android:layout_alignTop="@+id/comment_button" />
-
-    <Button
-        android:id="@+id/comment_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Comment"
-        android:onClick="commentClick"
-        android:layout_above="@+id/camera_button"
-        android:layout_toRightOf="@+id/shuck_button"
-        android:layout_toLeftOf="@+id/puck_button"
-        android:layout_toStartOf="@+id/puck_button" />
-
-    <Button
-        android:id="@+id/camera_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Camera"
-        android:onClick="cameraClick"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/shuck_button"
-        android:layout_toLeftOf="@+id/puck_button"
-        android:layout_toStartOf="@+id/puck_button" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

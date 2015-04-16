@@ -1,31 +1,19 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Layout;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
@@ -35,10 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by jjgo on 4/13/15.
@@ -70,6 +54,8 @@ public class comment extends ActionBarActivity {
         protected Integer doInBackground(URL... urls)
         {
             commentString = phoneSettings.redirectedReceive.toString();
+            if (commentString == null)
+                return null;
             commentString = commentString.concat("/comments/");
             commentString = commentString.replace("/static","");
             try {
@@ -127,6 +113,8 @@ public class comment extends ActionBarActivity {
             View parent = getViewByPosition(phoneSettings.listValues.size() - 1, listView);
             EditText editText = (EditText) parent.findViewById(R.id.editText);
             newComment = editText.getText().toString();
+            if (newComment.equals(""))
+                return;
             phoneSettings.listValues.add(phoneSettings.listValues.size()-1,newComment);
             refreshListView();
             new PostCommentAsyncTask().execute();

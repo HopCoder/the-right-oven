@@ -4,8 +4,6 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 
-import java.util.Arrays;
-
 /**
  * Created by jjgo on 2/24/15.
  */
@@ -43,5 +41,8 @@ public class math {
         }
 
         return inSampleSize;
+    }
+    public static byte [] transpose( byte [] pic){
+        return null;
     }
 }

@@ -200,7 +200,9 @@ public class cameraActivity extends Activity{
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(postUrl);
 
-
+            if (croppedPhoto == null){
+                return null;
+            }
             ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(croppedPhoto.length);
             byteArrayBuffer.append(croppedPhoto, 0, croppedPhoto.length);
 
@@ -244,6 +246,7 @@ public class cameraActivity extends Activity{
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
         {
+
             photoPreview = data;
             //data = null;
 

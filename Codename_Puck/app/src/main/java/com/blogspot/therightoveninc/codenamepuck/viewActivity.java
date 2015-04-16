@@ -1,27 +1,36 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class viewActivity extends Activity {
-    public int messageCount = 3;
+public class viewActivity extends ActionBarActivity {
     private PopupWindow popupWindow;
+    private ImageButton imageButton;
+    private URL url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,30 +38,113 @@ public class viewActivity extends Activity {
 
         setContentView(R.layout.view);
 
-        if (messageCount > 0)
-        {
-            // getImage();
-            new GetImageAsyncTask().execute();
-        }
+        imageButton = (ImageButton)findViewById(R.id.imageButton);
+
+        new GetImageAsyncTask().execute();
     }
 
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
     {
-        private ImageView i;
-        private Bitmap image;
-
         protected Integer doInBackground(URL... urls) {
-            URL url;
-
             try
             {
-                url = new URL("http://52.10.111.12:8000/view/1234567890/69/34/50");
-//                url = new URL("http://upsilondelts.org/images/bros/thaw.jpg");
-                image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-             //   i.setImageBitmap(image);
+                url = new URL("http://52.10.111.12:8000/view/5036792533/69/34/10/");
             }
             catch (MalformedURLException e)
             {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            new DecodeSampledBitmapFromStream().execute();
+        }
+    }
+
+    private class DecodeSampledBitmapFromStream extends AsyncTask<URL, Void, Integer>
+    {
+        HttpURLConnection urlConnection;
+        InputStream is;
+        protected Integer doInBackground(URL... urls)
+        {
+            ViewGroup.LayoutParams imageParams = imageButton.getLayoutParams();
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            try {
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setInstanceFollowRedirects(true);
+                is = urlConnection.getInputStream();
+                phoneSettings.redirectedReceive = urlConnection.getURL();
+                BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
+            }
+            catch(FileNotFoundException e)
+            {
+                // no more files
+                return -1;
+            }
+            catch(IOException e)
+            {}
+
+            // Calculate inSampleSize
+            options.inSampleSize = math.calculateInSampleSize(options, imageParams.width, imageParams.height);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            try {
+                phoneSettings.currentBitmap = BitmapFactory.decodeStream(phoneSettings.redirectedReceive.openConnection().getInputStream(), null, options);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            if (result == -1)
+            {
+                imageButton.setBackgroundColor(Color.parseColor("#000000"));
+            }
+            else
+            {
+                imageButton.setBackgroundColor(Color.parseColor("#942CFF"));
+                imageButton.setImageBitmap(phoneSettings.currentBitmap);
+            }
+        }
+    }
+
+    public void puckClick(View v)
+    {
+        Log.e("a", "hi");
+
+        new PuckItAsyncTask().execute();
+    }
+
+    private class PuckItAsyncTask extends AsyncTask<URL, Void, Integer>
+    {
+        @Override
+        protected Integer doInBackground(URL... urls) {
+            try {
+
+                String puck_string = phoneSettings.redirectedReceive.toString().replace("static", "puck_up");
+                URL u = new URL(puck_string);
+
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(puck_string);
+                HttpResponse response = httpclient.execute(httpGet);
+
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             catch (IOException e) {
@@ -65,50 +157,8 @@ public class viewActivity extends Activity {
         @Override
         protected void onPostExecute(Integer result)
         {
-            i = (ImageView) findViewById(R.id.imageView);
-            i.setImageBitmap(image);
-
-            return;
+            messageDelete();
         }
-    }
-
-    private void getImage()
-    {
-        ImageView i = (ImageView) findViewById(R.id.imageView);
-        URL url;
-
-        try
-        {
-            url = new URL("http://52.10.111.12:8000/static/a.jpg");
-            Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-    //        i.setImageBitmap(image);
-        }
-        catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void commentClick(View v)
-    {
-        return;
-    }
-
-    public void cameraClick(View v)
-    {
-        Intent cameraIntent = new Intent(this, cameraActivity.class);
-        startActivity(cameraIntent);
-    }
-
-    public void puckClick(View v)
-    {
-        Log.e("a", "hi");
-        // send back url
-
-        messageDelete();
     }
 
     public void shuckClick(View v)
@@ -116,6 +166,12 @@ public class viewActivity extends Activity {
         Log.e("a", "shuck that!");
 
         messageDelete();
+    }
+
+    public void commentClick(View v)
+    {
+        Intent i = new Intent(this, comment.class);
+        startActivity(i);
     }
 
     // Popup code (mostly) starts here
@@ -132,7 +188,7 @@ public class viewActivity extends Activity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
-    public void  reportConfirmClick(View v)
+    public void reportConfirmClick(View v)
     {
         // TODO: add user report logic here
 
@@ -145,9 +201,13 @@ public class viewActivity extends Activity {
         popupWindow.dismiss();
     }
 
+    public void onCameraClick(View v){
+        Intent cameraIntent = new Intent(this, cameraActivity.class);
+        startActivity(cameraIntent);
+    }
+
     private void messageDelete()
     {
         new GetImageAsyncTask().execute();
     }
-
 }

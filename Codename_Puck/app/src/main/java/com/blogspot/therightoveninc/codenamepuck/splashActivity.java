@@ -15,9 +15,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by jjgo on 2/21/15.
@@ -31,6 +33,14 @@ public class splashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
+        Random gen = new Random();
+        String PhoneNum = "";
+        for (int i = 0; i < 10; i++){
+            int rand = gen.nextInt(10);
+            PhoneNum += Integer.toString(rand);
+        }
+        phoneSettings.postUrl = "http://52.10.111.12:8000/post/" + PhoneNum + "/69/34/";
+        Log.d("splsh:", phoneSettings.postUrl);
         getDimensions();
 
         new GetCookieAsyncTask().execute();
