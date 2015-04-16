@@ -8,12 +8,25 @@
         android:id="@+id/imageView"
         android:background="#942CFF"
         android:src="@drawable/black_cat"/>
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
         android:layout_margin="15dp"
-        android:textSize="20dp"/>
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:textSize="20dp"/>
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:text="Delete"
+            android:textColor="#FFFFFF"
+            android:background="#942CFF"
+            android:id="@+id/deleteButton"
+            android:onClick="deleteCommentClick"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
