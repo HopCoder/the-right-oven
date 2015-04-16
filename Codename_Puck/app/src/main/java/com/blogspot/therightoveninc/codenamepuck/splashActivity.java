@@ -39,6 +39,7 @@ public class splashActivity extends Activity {
             int rand = gen.nextInt(10);
             PhoneNum += Integer.toString(rand);
         }
+        phoneSettings.phoneNum = PhoneNum;
         phoneSettings.postUrl = "http://52.10.111.12:8000/post/" + PhoneNum + "/69/34/";
         Log.d("splsh:", phoneSettings.postUrl);
         getDimensions();
