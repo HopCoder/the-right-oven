@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Picture, User
+from .models import Picture, User, Comment
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.template import loader, RequestContext
 from django.templatetags.static import static
@@ -10,6 +10,18 @@ import random
 import time
 from django.views.decorators.csrf import csrf_exempt
 import os
+from PIL import Image
+
+class PuckUp(View):
+    def get(self, request, pic_url):
+        pic = Picture.objects.get(unique_code=pic_url)
+        pic.views_left = pic.views_left + 5
+        pic.save()
+        return HttpResponse("<h1>Great Success!</h1>")
+
+class ShuckIt(View):
+    def get(self, request, pic_url):
+        pass
 
 random.seed()
 
@@ -39,14 +51,13 @@ class ViewPicture(View):
         #print('(', min_lat, ',', min_lon, '),(', max_lat, ',', max_lon, ')')
 
         photos = Picture.objects.filter(lat__lte=max_lat, lat__gte=min_lat,
-                                        lon__lte=max_lon, lon__gte=min_lon)
+                                        lon__lte=max_lon, lon__gte=min_lon,
+                                        views_left__gt=0)
         return photos
     
     def filter_list(self, user, photos):
-        # TODO: still need to add logic for filtering out if user has already seen
-        # I think we might be able to do it in the filter, in which case it will
-        # probably be faster.  Try that first
-        return
+        photos = photos.exclude(users_seen__number=user)
+        return photos
 
     def select_pic(self, photos):
         # how to sort list? right now just choose the first one
@@ -54,7 +65,13 @@ class ViewPicture(View):
         return photos[random.randint(0,len(photos)-1)]
 
     def user_seen(self, user, photo):
-        # TODO: add user to the list of people that have seen this picture
+        try:
+            viewer = User.objects.get(number=user)
+        except:
+            viewer = User(number=user)
+            viewer.save()
+        photo.users_seen.add(viewer)
+        photo.views_left -= 1
         return
 
     def get(self, request, user, lat, lon, dist):
@@ -64,7 +81,7 @@ class ViewPicture(View):
         dist = int(dist)
         user = int(user)
         display_pics = self.get_range(lat, lon, dist)
-        self.filter_list(user, display_pics)
+        display_pics = self.filter_list(user, display_pics)
         if len(display_pics) == 0:
             return HttpResponseNotFound("<h1>No more pictures</h1>")
         final_pic = self.select_pic(display_pics)
@@ -76,33 +93,88 @@ class ViewPicture(View):
         # [10 digit phone number][time since epoch]
         # eg: 20128373371427929704
         # corresponds to my # and 7:08 on April 1st 2015
-        unique_code = user + str(int(time.mktime(time.localtime()))) + '.png'
+        unique_code = user + str(int(time.mktime(time.localtime()))) + '.jpg'
         lat = int(lat)/(10**8)
         lon = int(lon)/(10**8)
+        user = int(user)
 
         new_pic = Picture()
         new_pic.lat = lat
         new_pic.lon = lon
         new_pic.unique_code = unique_code
-        #TODO: add something to identify user to picture
+        # something to identify user to picture
+        try:
+            poster = User.objects.get(number=user)
+        except:
+            poster = User(number=user)
+            poster.save()
 
-        line_one = request.readline()
-        index = line_one.find(b'&')
+        new_pic.poster = poster
+
+#        line_one = request.readline()
+#        index = line_one.find(b'&')
         
         try:
-            if index == -1:
-                raise EOFError('No picture data')
+#            if index == -1:
+#                raise EOFError('No picture data')
             f = open('./pictures/static/'+unique_code, 'wb')
-            f.write(line_one[index+1:])
+#            f.write(line_one[index+1:])
             for line in request.readlines():
                 f.write(line)
 
             f.close()
             new_pic.save()
 
+            rotate_im = Image.open('./pictures/static/'+unique_code)
+            rotate_im = rotate_im.rotate(-90)
+            rotate_im.save('./pictures/static/'+unique_code)
+
+
             return HttpResponse("<h1>Finished Uploading</h1>")
        
         except EOFError:
             return HttpResponseNotFound("<h1>No data..."+
                     " (or incorrect format)</h1>")
+       
+class ViewComments(View):
+    def get(self, request, pic_url):
+        comment_list = Comment.objects.filter(pic__unique_code=pic_url)
+        comment_list.order_by('order')
+        template = loader.get_template('comments.html')
+        context = RequestContext(request, {
+                    'comment_list':comment_list,
+                })
+        return HttpResponse(template.render(context))
+
+    def post(self, request, pic_url):
+        try:
+            comments = Comment.objects.filter(pic__unique_code=pic_url)
+            comments.order_by('order')
+            number = comments[-1].order + 1
+        except:
+            number = 1
+
+        try:
+            comment = request.readline()
+            print(comment)
+            comment = comment.decode("utf-8")
+            if comment.startswith('<remove>'):
+                print('here')
+                delete_comment = Comment.objects.get(comment=comment[8:])
+                delete_comment.delete()
+            else:
+                if len(Comment.objects.filter(comment=comment,
+                                pic=Picture.objects.get(unique_code=pic_url))) > 0:
+                    raise Exception('non-unique', 'please choose a unique comment')
+                print(comment)
+                new_comment = Comment(comment=comment, order=number,
+                                    pic=Picture.objects.get(unique_code=pic_url))
+                new_comment.save()
+
+            return HttpResponse("<h1>Done</h1>") 
         
+        except Exception as err:
+            print(err)
+            return HttpResponse("<h1>Comment Upload Failed</h1>")
+
+

@@ -1,21 +1,32 @@
 from django.db import models
 
+class User(models.Model):
+    number = models.IntegerField()
+    comments = models.ForeignKey('Comment', null=True)
+    def __str__(self):
+        return str(self.number)
+
+class Comment(models.Model):
+    comment = models.CharField(max_length=256)
+    pic = models.ForeignKey('Picture', null=True)
+    order = models.IntegerField(default=1)
+    def __str__(self):
+        return self.comment 
 
 class Picture(models.Model):
     #8 decimal places gets to within 1 mm
     lat = models.DecimalField(max_digits=10,decimal_places=8)
     lon = models.DecimalField(max_digits=11,decimal_places=8)
     unique_code = models.CharField(max_length=50)
-    #TODO: add something to track the user that posted
-    #TODO: add something to track how many views the picture has left
+    # something to track the user that posted
+    poster = models.ForeignKey('User', null=True)
+    # add something to track how many views the picture has left
+    views_left = models.IntegerField(default=5)
     
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    users_seen = models.ManyToManyField('User', related_name='pics_viewed')
+
     def __str__(self):
         return self.unique_code
-
-class User(models.Model):
-    number = models.IntegerField()
-    viewed_pics = models.ManyToManyField(Picture)
-    
-    def __str__(self):
-        return str(self.number)
 
