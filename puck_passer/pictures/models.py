@@ -11,7 +11,7 @@ class Comment(models.Model):
     pic = models.ForeignKey('Picture', null=True)
     order = models.IntegerField(default=1)
     def __str__(self):
-        return 
+        return self.comment 
 
 class Picture(models.Model):
     #8 decimal places gets to within 1 mm

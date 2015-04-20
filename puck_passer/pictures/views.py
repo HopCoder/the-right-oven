@@ -10,14 +10,18 @@ import random
 import time
 from django.views.decorators.csrf import csrf_exempt
 import os
+from PIL import Image
 
 class PuckUp(View):
     def get(self, request, pic_url):
         pic = Picture.objects.get(unique_code=pic_url)
-        pic.views_left += 5
+        pic.views_left = pic.views_left + 5
+        pic.save()
         return HttpResponse("<h1>Great Success!</h1>")
 
-
+class ShuckIt(View):
+    def get(self, request, pic_url):
+        pass
 
 random.seed()
 
@@ -89,7 +93,7 @@ class ViewPicture(View):
         # [10 digit phone number][time since epoch]
         # eg: 20128373371427929704
         # corresponds to my # and 7:08 on April 1st 2015
-        unique_code = user + str(int(time.mktime(time.localtime()))) + '.png'
+        unique_code = user + str(int(time.mktime(time.localtime()))) + '.jpg'
         lat = int(lat)/(10**8)
         lon = int(lon)/(10**8)
         user = int(user)
@@ -107,19 +111,24 @@ class ViewPicture(View):
 
         new_pic.poster = poster
 
-        line_one = request.readline()
-        index = line_one.find(b'&')
+#        line_one = request.readline()
+#        index = line_one.find(b'&')
         
         try:
-            if index == -1:
-                raise EOFError('No picture data')
+#            if index == -1:
+#                raise EOFError('No picture data')
             f = open('./pictures/static/'+unique_code, 'wb')
-            f.write(line_one[index+1:])
+#            f.write(line_one[index+1:])
             for line in request.readlines():
                 f.write(line)
 
             f.close()
             new_pic.save()
+
+            rotate_im = Image.open('./pictures/static/'+unique_code)
+            rotate_im = rotate_im.rotate(-90)
+            rotate_im.save('./pictures/static/'+unique_code)
+
 
             return HttpResponse("<h1>Finished Uploading</h1>")
        
@@ -146,12 +155,26 @@ class ViewComments(View):
             number = 1
 
         try:
-            new_comment = Comment(comment=request.POST['comment'], order=number,
-                              pic=Picture.objects.get(unique_code=pic_url))
+            comment = request.readline()
+            print(comment)
+            comment = comment.decode("utf-8")
+            if comment.startswith('<remove>'):
+                print('here')
+                delete_comment = Comment.objects.get(comment=comment[8:])
+                delete_comment.delete()
+            else:
+                if len(Comment.objects.filter(comment=comment,
+                                pic=Picture.objects.get(unique_code=pic_url))) > 0:
+                    raise Exception('non-unique', 'please choose a unique comment')
+                print(comment)
+                new_comment = Comment(comment=comment, order=number,
+                                    pic=Picture.objects.get(unique_code=pic_url))
+                new_comment.save()
+
+            return HttpResponse("<h1>Done</h1>") 
+        
         except Exception as err:
             print(err)
             return HttpResponse("<h1>Comment Upload Failed</h1>")
 
-        new_comment.save()
-        return HttpResponse("<h1>Done</h1>") 
 
