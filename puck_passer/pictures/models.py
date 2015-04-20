@@ -23,6 +23,8 @@ class Picture(models.Model):
     # add something to track how many views the picture has left
     views_left = models.IntegerField(default=5)
     
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
     users_seen = models.ManyToManyField('User', related_name='pics_viewed')
 
     def __str__(self):
