@@ -52,6 +52,21 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".history"
+                  android:label="Codename Puck">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".historyDetails"
+                  android:label="Codename Puck">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+            </intent-filter>
+        </activity>
+
+
         <activity android:name=".cameraActivity"
             android:label="@string/app_name"
 

@@ -26,6 +26,8 @@ public class mainActivity extends Activity{
         startActivity(viewIntent);
     }
     public void onHistoryClick(View view){
+        Intent historyIntent = new Intent(this, history.class);
+        startActivity(historyIntent);
 
     }
 }
