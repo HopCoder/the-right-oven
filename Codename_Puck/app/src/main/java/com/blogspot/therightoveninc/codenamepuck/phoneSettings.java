@@ -6,19 +6,16 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jjgo on 4/4/15.
  */
 public class phoneSettings {
     public static int xPixels, yPixels;
-    public static List<String> listValues = new ArrayList<>();
     public static Bitmap currentBitmap;
+    public static Bitmap historyBitmap;
 
     public static BasicCookieStore cookieStore;
-
 
     public static Cookie cookie;
     public static String cfsr;

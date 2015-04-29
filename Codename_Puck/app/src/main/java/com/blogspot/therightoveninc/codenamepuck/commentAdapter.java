@@ -1,9 +1,6 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +16,9 @@ import java.net.URL;
 /**
  * Created by jjgo on 4/13/15.
  */
-public class commentAdapter extends ArrayAdapter<String> {
-    private final Context context;
-    private final String[] values;
+public class commentAdapter extends ArrayAdapter<String>{
+    protected Context context;
+    protected String[] values;
 
     public commentAdapter(Context context, String[] values) {
         super(context, R.layout.comment_row, values);
