@@ -24,4 +24,5 @@ public class phoneSettings {
     public static String postUrl;
 
     public static URL redirectedReceive;
+    public static URL redirectedHistory;
 }
