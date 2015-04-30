@@ -61,7 +61,7 @@ public class viewActivity extends ActionBarActivity {
                     case MotionEvent.ACTION_MOVE:
 
                         if (Math.abs(dx) > swipeThres && !puckshuck) {
-                            if(dx < 0){
+                            if(dx > 0){
                                 messageDelete();
                             }else{
                                 new PuckItAsyncTask().execute();

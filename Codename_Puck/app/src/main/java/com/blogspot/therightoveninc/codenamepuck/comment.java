@@ -54,11 +54,14 @@ public class comment extends abstractPhotoDetails {
 
     public void addCommentClick(View v) {
         try {
+            String secretchar = "u:";
             View parent = getViewByPosition(listValues.size() - 1, listView);
             EditText editText = (EditText) parent.findViewById(R.id.editText);
             newComment = editText.getText().toString();
             if (newComment.equals(""))
                 return;
+            else
+                newComment = newComment + secretchar + phoneSettings.phoneNum;
             listValues.add(listValues.size()-1,newComment);
             refreshListView();
             new PostCommentAsyncTask().execute();

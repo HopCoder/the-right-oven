@@ -31,12 +31,22 @@ public class commentAdapter extends ArrayAdapter<String>{
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.comment_row, parent, false);
         Button delButt = (Button)rowView.findViewById(R.id.deleteButton);
-        delButt.setVisibility(View.GONE);
+
         TextView textView = (TextView) rowView.findViewById(R.id.textView);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
         LinearLayout linearLayout = (LinearLayout) rowView.findViewById(R.id.newComment);
         LinearLayout commentSection = (LinearLayout) rowView.findViewById(R.id.commentSection);
-        textView.setText(values[position]);
+        if(values[position].matches( "^.*u:[0-9]{10}$")){
+            String [] stuff = values[position].split("u:");
+            if (stuff[1].equals(phoneSettings.phoneNum)){
+                delButt.setVisibility(View.VISIBLE);
+            }else{
+                delButt.setVisibility(View.GONE);
+            }
+            textView.setText(stuff[0]);
+        }else{
+            textView.setText(values[position]);
+        }
 
         ViewGroup.LayoutParams params;
 
@@ -45,7 +55,7 @@ public class commentAdapter extends ArrayAdapter<String>{
             imageView.setVisibility(View.VISIBLE);
             commentSection.setVisibility(View.GONE);
             linearLayout.setVisibility(View.GONE);
-
+            delButt.setVisibility(View.GONE);
             params = imageView.getLayoutParams();
             params.height = phoneSettings.xPixels;
             params.width = phoneSettings.xPixels;
@@ -57,9 +67,11 @@ public class commentAdapter extends ArrayAdapter<String>{
             imageView.setVisibility(View.GONE);
             commentSection.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
+            delButt.setVisibility(View.GONE);
         }
         else
         {
+
             imageView.setVisibility(View.GONE);
             commentSection.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
