@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * Created by jjgo on 4/14/15.
+ * This class represents the activity for viewing a user's previous posts.
  */
 public class history extends ActionBarActivity {
     private ListView listView;

@@ -17,6 +17,8 @@ import java.net.URL;
 
 /**
  * Created by jjgo on 4/14/15.
+ * This class is for loading a list of items to be scrolled
+ * through in a list view.
  */
 public class historyAdapter extends ArrayAdapter<String > {
     protected Context context;

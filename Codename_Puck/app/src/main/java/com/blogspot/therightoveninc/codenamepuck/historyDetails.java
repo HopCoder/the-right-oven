@@ -3,7 +3,6 @@ package com.blogspot.therightoveninc.codenamepuck;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
 
 /**
  * Created by jjgo on 4/27/15.
+ * This class represents the activity when looking at
+ * the comments of a user's previous post.
  */
 public class historyDetails extends abstractPhotoDetails{
     @Override
