@@ -6,8 +6,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -30,13 +32,46 @@ public class viewActivity extends ActionBarActivity {
     private PopupWindow popupWindow;
     private ImageButton imageButton;
     private URL url;
+    private float previousX, previousY;
+    private final float swipeThres = 10f;
+    private boolean puckshuck = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.view);
-
+        findViewById(R.id.imageButton).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float x = event.getX();
+                Log.d("onTouch:", "x:" + x);
+//        float y = event.getY();
+                float dx = previousX - x;
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        Log.d("onTouch:", "dx:" + dx);
+                        if (Math.abs(dx) > swipeThres && !puckshuck) {
+                            if(dx < 0){
+                                messageDelete();
+                                Log.d("onTouch:", "shuck" + dx);
+                            }else{
+                                new PuckItAsyncTask().execute();
+                                Log.d("onTouch:", "puck" + dx);
+                            }
+                            puckshuck = true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_DOWN://
+                        break;
+                }
+                previousX = x;
+//        previousY = y;
+                return true;
+            }
+        });
         imageButton = (ImageButton)findViewById(R.id.imageButton);
     }
 
@@ -140,12 +175,16 @@ public class viewActivity extends ActionBarActivity {
                 imageButton.setBackgroundColor(Color.parseColor("#942CFF"));
                 imageButton.setImageBitmap(phoneSettings.currentBitmap);
             }
+            puckshuck = false;
         }
     }
 
     public void puckClick(View v)
     {
-        new PuckItAsyncTask().execute();
+        if (!puckshuck){
+            puckshuck = true;
+            new PuckItAsyncTask().execute();
+        }
     }
 
     private class PuckItAsyncTask extends AsyncTask<URL, Void, Integer>
@@ -180,7 +219,11 @@ public class viewActivity extends ActionBarActivity {
 
     public void shuckClick(View v)
     {
-        messageDelete();
+        if (!puckshuck){
+            puckshuck = true;
+            messageDelete();
+        }
+
     }
 
     public void commentClick(View v)
