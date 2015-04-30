@@ -9,6 +9,7 @@ import java.net.URL;
 
 /**
  * Created by jjgo on 4/4/15.
+ * This class is a series of static variables utilized across the project.
  */
 public class phoneSettings {
     public static int xPixels, yPixels;
@@ -22,6 +23,5 @@ public class phoneSettings {
     public static String phoneNum;
     public static String postUrl;
 
-  //  public static String postUrl = "http://192.168.1.120:8000/post/5036792514/69/34/";
     public static URL redirectedReceive;
 }

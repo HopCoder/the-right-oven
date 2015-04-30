@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 
 /**
  * Created by jjgo on 2/24/15.
+ * A utility class to provide some redundant math operations (such as the conversion of pixel units) across the application
  */
 public class math {
     public static float convertDpToPixel(float dp){

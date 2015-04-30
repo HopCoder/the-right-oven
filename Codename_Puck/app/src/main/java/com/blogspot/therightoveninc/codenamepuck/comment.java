@@ -23,16 +23,18 @@ import java.util.ArrayList;
 
 /**
  * Created by jjgo on 4/13/15.
+ * This class creates the comment list and provides basic functionality to the comment buttons and options.
+ * Coupled alongside the comment adapter it creates the comprehensive comment view.
  */
 public class comment extends abstractPhotoDetails {
-    private String newComment;
+    private String newComment; //The new comment string sent to the server to be stored upon a sucessful submit.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view);
 
-        listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView); //The actual list object that will be filled by the comments on a sucessful get response from the server.
 
         listValues = new ArrayList<String>();
         listValues.add("secretString");

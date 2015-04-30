@@ -11,10 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.net.URL;
-
 /**
  * Created by jjgo on 4/13/15.
+ * This adapater class adaptatively changes the comment list that can be viewed on a picture.
  */
 public class commentAdapter extends ArrayAdapter<String>{
     protected Context context;
@@ -31,6 +30,8 @@ public class commentAdapter extends ArrayAdapter<String>{
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.comment_row, parent, false);
+        Button delButt = (Button)rowView.findViewById(R.id.deleteButton);
+        delButt.setVisibility(View.GONE);
         TextView textView = (TextView) rowView.findViewById(R.id.textView);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
         LinearLayout linearLayout = (LinearLayout) rowView.findViewById(R.id.newComment);

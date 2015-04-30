@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -34,8 +33,9 @@ public class viewActivity extends ActionBarActivity {
     private PopupWindow popupWindow;
     private ImageButton imageButton;
     private URL url;
-    private float previousX;
+    private float previousX, previousY;
     private final float swipeThres = 10f;
+    private final float tapThres = 0.00001f;
     private boolean puckshuck = false;
 
     @Override
@@ -49,21 +49,22 @@ public class viewActivity extends ActionBarActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 float x = event.getX();
-                Log.d("onTouch:", "x:" + x);
+                float y = event.getY();
 
                 float dx = previousX - x;
+                float dy = y - previousY;
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
+                        if (Math.abs(dx) < tapThres && Math.abs(dy) < tapThres && !puckshuck)
+                            commentClick();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        Log.d("onTouch:", "dx:" + dx);
+
                         if (Math.abs(dx) > swipeThres && !puckshuck) {
                             if(dx < 0){
                                 messageDelete();
-                                Log.d("onTouch:", "shuck" + dx);
                             }else{
                                 new PuckItAsyncTask().execute();
-                                Log.d("onTouch:", "puck" + dx);
                             }
                             puckshuck = true;
                         }
@@ -72,7 +73,7 @@ public class viewActivity extends ActionBarActivity {
                         break;
                 }
                 previousX = x;
-
+                previousY = y;
                 return true;
             }
         });
@@ -239,7 +240,7 @@ public class viewActivity extends ActionBarActivity {
     }
 
     // Get details of comments
-    public void commentClick(View v)
+    public void commentClick()
     {
         if(null != phoneSettings.redirectedReceive) {
             Intent i = new Intent(this, comment.class);

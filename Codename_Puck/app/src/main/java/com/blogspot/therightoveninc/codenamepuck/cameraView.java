@@ -42,9 +42,7 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
-
+        //Check to look for surface
         if (holder.getSurface() == null){
             // preview surface does not exist
             return;
@@ -101,11 +99,12 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
 
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
+        // purposely left blank.
     }
 
     private void previewCamera()
     {
+        //Try to set up the camera view if the camera can not be started catch the exception and output in the log.
         try
         {
             theCamera.setPreviewDisplay(holder);

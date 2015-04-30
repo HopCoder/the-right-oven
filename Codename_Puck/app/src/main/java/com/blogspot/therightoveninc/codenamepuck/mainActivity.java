@@ -7,6 +7,7 @@ import android.view.View;
 
 /**
  * Created by Timothy D. Mahon on 4/15/2015.
+ * The main menu page. From here the application sends for other classes.
  */
 public class mainActivity extends Activity{
 

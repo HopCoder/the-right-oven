@@ -1,7 +1,9 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import java.util.Random;
 
 /**
  * Created by jjgo on 2/21/15.
+ * The main splash class that appears when first starting the application.
+ * This class assigns and utlizes a random phone id to identify the phone.
  */
 public class splashActivity extends Activity {
 
@@ -32,14 +36,20 @@ public class splashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-
+        SharedPreferences settings = this.getPreferences(Context.MODE_PRIVATE);
         Random gen = new Random();
         String PhoneNum = "";
         for (int i = 0; i < 10; i++){
             int rand = gen.nextInt(10);
             PhoneNum += Integer.toString(rand);
         }
-        phoneSettings.phoneNum = PhoneNum;
+        phoneSettings.phoneNum = settings.getString("phoneID", PhoneNum);
+        if (phoneSettings.phoneNum == PhoneNum) {
+            settings.edit().putString("phoneID", PhoneNum).commit();
+            Log.d("id", "saved new");
+        }else{
+            Log.d("id", "used old");
+        }
         phoneSettings.postUrl = "http://52.10.111.12:8000/post/" + PhoneNum + "/69/34/";
         Log.d("splsh:", phoneSettings.postUrl);
         getDimensions();
