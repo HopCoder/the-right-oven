@@ -3,6 +3,7 @@ package com.blogspot.therightoveninc.codenamepuck;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -34,7 +35,7 @@ public class historyDetails extends abstractPhotoDetails{
         listValues = new ArrayList<String>();
         listValues.add("secretString");
 
-        String commentAddress = phoneSettings.redirectedReceive.toString();
+        String commentAddress = phoneSettings.redirectedHistory.toString();
 
         new GetHistoryCommentsAsyncTask().execute(commentAddress);
         new GetBitmapAsyncTask().execute();
@@ -52,7 +53,7 @@ public class historyDetails extends abstractPhotoDetails{
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_delete:
-                new DeletePhotoAsyncTask().execute(phoneSettings.redirectedReceive);
+                new DeletePhotoAsyncTask().execute(phoneSettings.redirectedHistory);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -66,10 +67,9 @@ public class historyDetails extends abstractPhotoDetails{
         {
             try
             {
-            if (phoneSettings.redirectedReceive == null)
+            if (phoneSettings.redirectedHistory == null)
                 return -1;
-            String deleteString = phoneSettings.redirectedReceive.toString().replace("static", "delete");
-
+            String deleteString = phoneSettings.redirectedHistory.toString().replace("static", "delete");
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpGet httpGet = new HttpGet(deleteString);
             HttpResponse response = httpclient.execute(httpGet);
@@ -115,7 +115,7 @@ public class historyDetails extends abstractPhotoDetails{
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             try {
-                urlConnection = (HttpURLConnection) phoneSettings.redirectedReceive.openConnection();
+                urlConnection = (HttpURLConnection) phoneSettings.redirectedHistory.openConnection();
                 BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
             }
             catch(FileNotFoundException e)
@@ -136,7 +136,7 @@ public class historyDetails extends abstractPhotoDetails{
             // Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false;
             try {
-                phoneSettings.historyBitmap = BitmapFactory.decodeStream(phoneSettings.redirectedReceive.openConnection().getInputStream(), null, options);
+                phoneSettings.historyBitmap = BitmapFactory.decodeStream(phoneSettings.redirectedHistory.openConnection().getInputStream(), null, options);
             }
             catch (Exception e)
             {

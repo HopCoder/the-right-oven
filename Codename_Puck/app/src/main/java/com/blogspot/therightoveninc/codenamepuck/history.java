@@ -89,7 +89,7 @@ public class history extends ActionBarActivity {
                 // request redirect
                 InputStream is = urlConnection.getInputStream();
 
-                phoneSettings.redirectedReceive = urlConnection.getURL();
+                phoneSettings.redirectedHistory = urlConnection.getURL();
             }
             catch (IOException e)
             {
@@ -109,7 +109,7 @@ public class history extends ActionBarActivity {
 
     private void getDetails()
     {
-        if(null != phoneSettings.redirectedReceive) {
+        if(null != phoneSettings.redirectedHistory) {
             Intent i = new Intent(this, historyDetails.class);
             startActivity(i);
         }
@@ -125,7 +125,6 @@ public class history extends ActionBarActivity {
                 URL oracle = new URL(urlString);
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(oracle.openStream()));
-
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     if (inputLine.length() > 0 && !inputLine.contains("<br/>")) {
