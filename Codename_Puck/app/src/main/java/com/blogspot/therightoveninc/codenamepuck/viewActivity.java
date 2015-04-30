@@ -27,12 +27,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-
+/*
+    This class represents the activity for browsing photos.
+ */
 public class viewActivity extends ActionBarActivity {
     private PopupWindow popupWindow;
     private ImageButton imageButton;
     private URL url;
-    private float previousX, previousY;
+    private float previousX;
     private final float swipeThres = 10f;
     private boolean puckshuck = false;
 
@@ -41,12 +43,14 @@ public class viewActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.view);
+
+        // Swipe detection
         findViewById(R.id.imageButton).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 float x = event.getX();
                 Log.d("onTouch:", "x:" + x);
-//        float y = event.getY();
+
                 float dx = previousX - x;
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
@@ -68,7 +72,7 @@ public class viewActivity extends ActionBarActivity {
                         break;
                 }
                 previousX = x;
-//        previousY = y;
+
                 return true;
             }
         });
@@ -92,6 +96,7 @@ public class viewActivity extends ActionBarActivity {
         }
     }
 
+    // Get the next photo, anything with urls must be Async.
     private class GetImageAsyncTask extends AsyncTask<URL, Void, Integer>
     {
         protected Integer doInBackground(URL... urls) {
@@ -114,6 +119,7 @@ public class viewActivity extends ActionBarActivity {
         }
     }
 
+    // Scale and load the photo.
     private class DecodeSampledBitmapFromStream extends AsyncTask<URL, Void, Integer>
     {
         HttpURLConnection urlConnection;
@@ -126,10 +132,13 @@ public class viewActivity extends ActionBarActivity {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             try {
+                // get the redirected url
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setInstanceFollowRedirects(true);
                 is = urlConnection.getInputStream();
                 phoneSettings.redirectedReceive = urlConnection.getURL();
+
+                // create a BitmapFactory to get photo parameters
                 BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
             }
             catch(FileNotFoundException e)
@@ -163,6 +172,7 @@ public class viewActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer result)
         {
+            // If there's no more photos, set a red background
             if (result == -1) {
                 imageButton.setBackgroundColor(Color.parseColor("#000000"));
                 imageButton.setImageResource(android.R.color.holo_red_dark);
@@ -179,6 +189,7 @@ public class viewActivity extends ActionBarActivity {
         }
     }
 
+    // Button implementation for Pucking
     public void puckClick(View v)
     {
         if (!puckshuck){
@@ -187,6 +198,7 @@ public class viewActivity extends ActionBarActivity {
         }
     }
 
+    // Notify server of a Puck
     private class PuckItAsyncTask extends AsyncTask<URL, Void, Integer>
     {
         @Override
@@ -226,6 +238,7 @@ public class viewActivity extends ActionBarActivity {
 
     }
 
+    // Get details of comments
     public void commentClick(View v)
     {
         if(null != phoneSettings.redirectedReceive) {
@@ -266,6 +279,7 @@ public class viewActivity extends ActionBarActivity {
         startActivity(cameraIntent);
     }
 
+    // Get a new photo from the server for each Puck or Shuck
     private void messageDelete()
     {
         phoneSettings.redirectedReceive = null;
