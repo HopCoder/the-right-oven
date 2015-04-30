@@ -15,12 +15,15 @@ import java.util.ArrayList;
 
 /**
  * Created by jjgo on 4/27/15.
+ * This abstract class is the basis for detailed views of
+ * photos from the comments and history.
  */
 public abstract class abstractPhotoDetails extends ActionBarActivity {
     protected ListView listView;
     protected String commentString;
     protected ArrayList<String> listValues;
 
+    // Load the comments attached to the photo.
     protected abstract class GetCommentsAsyncTask extends AsyncTask<String, Void, Integer>
     {
         @Override
@@ -32,7 +35,7 @@ public abstract class abstractPhotoDetails extends ActionBarActivity {
             }
             commentString = strings[0];
 
-
+            // change the url to get comments for a photo
             commentString = commentString.concat("/comments/");
             commentString = commentString.replace("/static","");
             try {
@@ -60,6 +63,7 @@ public abstract class abstractPhotoDetails extends ActionBarActivity {
         }
     }
 
+    // let this get overloaded
     protected void refreshListView()
     {
     }

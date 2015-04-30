@@ -88,6 +88,7 @@ public class historyDetails extends abstractPhotoDetails{
         protected void onPostExecute(Integer result)
         {
             if (result == 0) {
+                // finish() is what the back button does
                 finish();
             }
             return;
@@ -101,6 +102,7 @@ public class historyDetails extends abstractPhotoDetails{
         listView.setAdapter(adapter);
     }
 
+    // cache the image that is being viewed
     private class GetBitmapAsyncTask extends AsyncTask<URL, Void, Integer>
     {
         HttpURLConnection urlConnection;
@@ -150,6 +152,7 @@ public class historyDetails extends abstractPhotoDetails{
         }
     }
 
+    // need a class to not be abstract, no need to overload anything
     protected class GetHistoryCommentsAsyncTask extends GetCommentsAsyncTask
     {
     }

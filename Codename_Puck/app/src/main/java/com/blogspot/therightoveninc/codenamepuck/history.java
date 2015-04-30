@@ -42,6 +42,7 @@ public class history extends ActionBarActivity {
         urlString = "http://52.10.111.12:8000/" + phoneSettings.phoneNum + "/history/";
     }
 
+    // reload the history often
     @Override
     protected void onResume()
     {
@@ -56,6 +57,7 @@ public class history extends ActionBarActivity {
         historyAdapter adapter = new historyAdapter(context, listHistory.toArray(new String[listHistory.size()]));
         listView.setAdapter(adapter);
 
+        // create behavior for item clicks
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position,
@@ -67,6 +69,7 @@ public class history extends ActionBarActivity {
         });
     }
 
+    // contact the server and request the url of a specific post
     private class HistoryDetailsAsyncTask extends AsyncTask<String,Boolean,Integer>
     {
         @Override
@@ -111,6 +114,7 @@ public class history extends ActionBarActivity {
         }
     }
 
+    // get the list of past posts
     private class GetHistoryAsyncTask extends AsyncTask<URL,Void,Integer>
     {
         @Override

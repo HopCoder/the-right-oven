@@ -28,6 +28,7 @@ public class historyAdapter extends ArrayAdapter<String > {
         this.values = values;
     }
 
+    // set the text for each item
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
