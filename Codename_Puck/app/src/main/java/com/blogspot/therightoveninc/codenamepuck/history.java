@@ -40,9 +40,15 @@ public class history extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         urlString = "http://52.10.111.12:8000/" + phoneSettings.phoneNum + "/history/";
+    }
+
+    @Override
+    protected void onResume()
+    {
         listHistory = new ArrayList<String>();
         new GetHistoryAsyncTask().execute();
-        refreshListView();
+        super.onResume();
+
     }
 
     private void refreshListView()
@@ -54,7 +60,6 @@ public class history extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position,
                                     long arg3) {
-                Log.e("lll", "click click");
                 String itemUrl = urlString.replace("history", Integer.toString(position));
                 new HistoryDetailsAsyncTask().execute(itemUrl);
             }

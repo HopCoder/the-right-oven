@@ -1,15 +1,21 @@
 package com.blogspot.therightoveninc.codenamepuck;
 
-
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -17,8 +23,6 @@ import java.util.ArrayList;
  * Created by jjgo on 4/27/15.
  */
 public class historyDetails extends abstractPhotoDetails{
-    Bitmap bitmap;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +37,61 @@ public class historyDetails extends abstractPhotoDetails{
 
         new GetHistoryCommentsAsyncTask().execute(commentAddress);
         new GetBitmapAsyncTask().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.history_detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                new DeletePhotoAsyncTask().execute(phoneSettings.redirectedReceive);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private class DeletePhotoAsyncTask extends AsyncTask<URL, Void, Integer>
+    {
+        @Override
+        protected Integer doInBackground(URL... urls)
+        {
+            try
+            {
+            if (phoneSettings.redirectedReceive == null)
+                return -1;
+            String deleteString = phoneSettings.redirectedReceive.toString().replace("static", "delete");
+
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(deleteString);
+            HttpResponse response = httpclient.execute(httpGet);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return -1;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return -1;
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            if (result == 0) {
+                finish();
+            }
+            return;
+        }
     }
 
     @Override

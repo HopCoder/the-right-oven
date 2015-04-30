@@ -156,14 +156,12 @@ public class viewActivity extends ActionBarActivity {
                 if (phoneSettings.redirectedReceive == null)
                     return null;
                 String puck_string = phoneSettings.redirectedReceive.toString().replace("static", "puck_up");
-                URL u = new URL(puck_string);
 
                 DefaultHttpClient httpclient = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(puck_string);
                 HttpResponse response = httpclient.execute(httpGet);
 
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             catch (IOException e) {
