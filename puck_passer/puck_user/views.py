@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from puck_passer.settings import BASE_DIR
 import os
 
-# Create your views here.
+# Get the user history of photos posted
 class History(View):
     def get(self, request, user):
         user = int(user)
@@ -18,6 +18,7 @@ class History(View):
         print(pics)
         return HttpResponse(template.render(context))
 
+# use this class to view a single pic from the history list
 class GetOldPic(View):
     def get(self, request, user, number):
         user = int(user)
@@ -25,6 +26,7 @@ class GetOldPic(View):
         pics = Picture.objects.filter(poster__number=user).order_by('-created')
         return HttpResponseRedirect('/static/'+pics[number].unique_code)
 
+# use this to delete a picture once gotten with GetOldPic
 class DeletePic(View):
     def get(self, request, pic_url):
         try:
@@ -35,7 +37,7 @@ class DeletePic(View):
         os.remove(BASE_DIR+'/pictures/static/'+pic_url)
         return HttpResponse("<h1>success</h1>")
 
-
+# Use this to get csrf token
 class PuckUser(View):
     def get(self, request):
         return render(request, 'index.html', {})
