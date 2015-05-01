@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from pictures.views import ViewPicture, PuckUp, ShuckIt, ViewComments
-from puck_user.views import PuckUser, History, GetOldPic
+from puck_user.views import PuckUser, History, GetOldPic, DeletePic
 
 urlpatterns = patterns('',
     # Examples:
@@ -22,7 +22,8 @@ urlpatterns = patterns('',
     url(r'^(?P<pic_url>[a-zA-Z0-9_. ,]*)/comments/$', 
                 ViewComments.as_view()),
 
-    url(r'^(?P<user>\d{10})/history/$', History.as_view())
-    url(r'^(?P<user>\d{10})/(?P<number>\d+)/$', GetOldPic.as_view())
+    url(r'^(?P<user>\d{10})/history/$', History.as_view()),
+    url(r'^(?P<user>\d{10})/(?P<number>\d+)/$', GetOldPic.as_view()),
+    url(r'^delete/(?P<pic_url>[a-zA-Z0-9_. ,]*)/$', DeletePic.as_view()),
     #url(r'^view/(?P<user>\d{10})/(?P<lat>\d+)/(?P<lon>\d+)/(?P<dist>\d{2})/$', include(admin.site.urls)),
 )
