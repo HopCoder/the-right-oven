@@ -18,13 +18,15 @@ import java.util.ArrayList;
  * photos from the comments and history.
  */
 public abstract class abstractPhotoDetails extends ActionBarActivity {
-    protected ListView listView;
-    protected String commentString;
-    protected ArrayList<String> listValues;
+    protected ListView listView; //The view container for listing comments
+    protected String commentString; //The actual comment string to be listed
+    protected ArrayList<String> listValues; //The container for the storing comments as they're received from the server.
 
     // Load the comments attached to the photo.
     protected abstract class GetCommentsAsyncTask extends AsyncTask<String, Void, Integer>
     {
+        //The background process responsible for grabbing comments from the sever and updating the listview and
+        //listValue containers to present the comments to the user.
         @Override
         protected Integer doInBackground(String... strings)
         {
@@ -66,7 +68,7 @@ public abstract class abstractPhotoDetails extends ActionBarActivity {
     protected void refreshListView()
     {
     }
-
+    //This gets each individual comment one by one to be contained in the listview
     public View getViewByPosition(int pos, ListView listView) {
         final int firstListItemPosition = listView.getFirstVisiblePosition();
         final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;

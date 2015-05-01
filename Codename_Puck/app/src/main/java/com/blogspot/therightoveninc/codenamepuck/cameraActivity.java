@@ -36,16 +36,18 @@ import java.util.Date;
 
 /**
  * Created by Timothy D. Mahon on 2/28/2015.
+ * Here is the camera activity class responsible for creating the camera view class (which actually preivews the camera to the user).
  */
 public class cameraActivity extends Activity{
-    private Camera theCamera;
-    private cameraView theCameraView;
-    private FrameLayout cameraLayout;
-    private boolean cameraBusy = false;
-    private byte[] photoPreview, croppedPhoto;
-    private int upperHeight;
-    private String postUrl = phoneSettings.postUrl;
+    private Camera theCamera; //Camera object for taking photos.
+    private cameraView theCameraView; //the preview of the camera
+    private FrameLayout cameraLayout; //The layout of the preview
+    private boolean cameraBusy = false; //A boolean to block the camera as it takes photos.
+    private byte[] photoPreview, croppedPhoto; //Image byte arrays. Containers for recieving and sending photos.
+    private int upperHeight; //A parameter to help fit the preview better
+    private String postUrl = phoneSettings.postUrl; //The url utilized in the post repsonse to the server
 
+    //The activities create method responsible for grabbing the activie display and creating the camera preview.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,17 +60,20 @@ public class cameraActivity extends Activity{
         decorView.setSystemUiVisibility(uiOptions);
     }
 
+    //On pause method, responsible for releasing the camera so other processes can use it while the application is paused.
     @Override
     protected void onPause(){
         super.onPause();
         releaseCamera();
     }
 
+    //Destructor called when the camera activity ends.
     @Override
     protected void onDestroy(){
         super.onDestroy();
     }
 
+    //Resume method. Grabs the camera and starts it. Presents the preview to the user.
     @Override
     protected void onResume(){
         super.onResume();
@@ -92,6 +97,7 @@ public class cameraActivity extends Activity{
         setOverlay();
     }
 
+    //Method for setting the puck GUI overlay ontop of the camera preview.
     private void setOverlay()
     {
         // get navigation bar height
@@ -163,26 +169,12 @@ public class cameraActivity extends Activity{
         }
     }
 
+    //The upload method. On a click to upload button this starts an Asyncronous task to send the newly created photo
+    //To the puck server.
     public void onUploadClick(View v)
     {
         if (cameraBusy)
         {
-            //the size of the array is the dimensions of the sub-photo
-          //  int[] pixels = new int[phoneSettings.xPixels*phoneSettings.xPixels];
-  //          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          //  Bitmap bitmap = BitmapFactory.decodeByteArray(photoPreview, 0, photoPreview.length);
-
-            // (int[] pixels, int offset, int stride, int x, int y, int width, int height)
-        //    bitmap.getPixels(pixels, 0, phoneSettings.xPixels, 0, upperHeight+1, phoneSettings.xPixels, phoneSettings.xPixels);
-
-            //ARGB_8888 is a good quality configuration
-       //     bitmap = Bitmap.createBitmap(pixels, 0, 100, 100, 100, Bitmap.Config.ARGB_8888);
-
-            //100 is the best quality possible
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 1, bos);
-
-//            croppedPhoto = bos.toByteArray();
-
             croppedPhoto = photoPreview;
             photoPreview = null;
 
@@ -193,7 +185,7 @@ public class cameraActivity extends Activity{
             theCamera.startPreview();
         }
     }
-
+    //A Aysncronous Task created to send photos to the puck server.
     private class UploadPhotoAsyncTask extends AsyncTask<URL, Void, Void>
     {
         protected Void doInBackground(URL... urls) {
@@ -232,6 +224,7 @@ public class cameraActivity extends Activity{
         }
     }
 
+    //A shutter callback method created to introduce sound into the application upon capturing a picture.
     Camera.ShutterCallback shutter = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
@@ -240,6 +233,8 @@ public class cameraActivity extends Activity{
         }
     };
 
+    //The actual picture taking callback responsible for storing the photo int oa byte array to be sent to the
+    //Puck server.
     Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
@@ -257,33 +252,17 @@ public class cameraActivity extends Activity{
                 Log.d("a", "Error creating media file, check storage permissions: ");
                 return;
             }
-            /*
-            try {
-                Log.e("q","hi");
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                Log.e("q","bye");
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.d("e", "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d("e", "Error accessing file: " + e.getMessage());
-            }*/
-
             return;
         }
     };
 
+    //method to obtain outside storage space to save the photo.
     private  File getOutputMediaFile(int type){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Puck");
-
-
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
         if (! mediaStorageDir.exists()){

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 public class comment extends abstractPhotoDetails {
     private String newComment; //The new comment string sent to the server to be stored upon a sucessful submit.
 
+    //The method called on creation of the comment view. This sets the current view to include the listView object and
+    //begins to populate the listValues
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,7 @@ public class comment extends abstractPhotoDetails {
         refreshListView();
     }
 
+    //method to refresh the listview responsible for comments. creates the comment adaptor option.
     @Override
     protected void refreshListView()
     {
@@ -52,6 +55,7 @@ public class comment extends abstractPhotoDetails {
         listView.setAdapter(adapter);
     }
 
+    //the post comment button callback. this adds a comment to the list of comments on the server.
     public void addCommentClick(View v) {
         try {
             String secretchar = "u:";
@@ -70,7 +74,7 @@ public class comment extends abstractPhotoDetails {
             e.printStackTrace();
         }
     }
-
+    //the delete comment button function callback deletes a comment from the server asserting that
     public void deleteCommentClick(View v) {
         View parent = (View) v.getParent();
         TextView textView = (TextView) parent.findViewById(R.id.textView);
@@ -91,6 +95,7 @@ public class comment extends abstractPhotoDetails {
         new PostCommentAsyncTask().execute();
     }
 
+    //The post comment asynchronous task responsible for posting new comments to the server.
     public class PostCommentAsyncTask extends AsyncTask<URL,Void,Void>
     {
         protected Void doInBackground(URL... urls) {
@@ -122,6 +127,7 @@ public class comment extends abstractPhotoDetails {
         }
     }
 
+    //the asynchronsus task responsible for getting the comment views.
     protected class ViewCommentsAsyncTask extends GetCommentsAsyncTask
     {
         @Override
