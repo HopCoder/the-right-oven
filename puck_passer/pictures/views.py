@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import os
 from PIL import Image
 
+# Call this class to puck up a photo
 class PuckUp(View):
     def get(self, request, pic_url):
         pic = Picture.objects.get(unique_code=pic_url)
@@ -19,15 +20,17 @@ class PuckUp(View):
         pic.save()
         return HttpResponse("<h1>Great Success!</h1>")
 
+# Call this class to shuck a photo, although it does not need to be implemented as is
 class ShuckIt(View):
     def get(self, request, pic_url):
         pass
 
 random.seed()
 
+# this class 
 class ViewPicture(View):
     def get_range(self, lat, lon, dist):
-        # TODO: test to see if distances are calculated correctly
+        # calculate lat and lon
         max_lat = lat + (dist*1600/6371000)*180/math.pi
         min_lat = lat - (dist*1600/6371000)*180/math.pi
         
@@ -42,8 +45,6 @@ class ViewPicture(View):
                     math.cos(lat))
                 * 180/math.pi)
 
-        # TODO: add bound checking
-        
         if max_lat < min_lat: min_lat, max_lat = max_lat, min_lat
         if max_lon < min_lon: min_lon, max_lon = max_lon, min_lon
 
@@ -54,7 +55,8 @@ class ViewPicture(View):
                                         lon__lte=max_lon, lon__gte=min_lon,
                                         views_left__gt=0)
         return photos
-    
+
+    # don't show the same user the same pic
     def filter_list(self, user, photos):
         photos = photos.exclude(users_seen__number=user)
         return photos
@@ -64,6 +66,7 @@ class ViewPicture(View):
         # We will choose a random one.... I think its better that way
         return photos[random.randint(0,len(photos)-1)]
 
+    # add to user seen list
     def user_seen(self, user, photo):
         try:
             viewer = User.objects.get(number=user)
@@ -74,8 +77,8 @@ class ViewPicture(View):
         photo.views_left -= 1
         return
 
+    # get a new picture
     def get(self, request, user, lat, lon, dist):
-        # TODO: this does not handle negative values for requests
         lat = int(lat)/(10**8)
         lon = int(lon)/(10**8)
         dist = int(dist)
@@ -88,6 +91,7 @@ class ViewPicture(View):
         self.user_seen(user, final_pic)
         return HttpResponseRedirect(static(final_pic.unique_code))
 
+    # call this to post a picture
     def post(self, request, user, lat, lon):
         # Unique code will be in this format:
         # [10 digit phone number][time since epoch]
@@ -111,6 +115,8 @@ class ViewPicture(View):
 
         new_pic.poster = poster
 
+        # These commented lines add csrf protection.
+        # this is not currently enabled on the frontend
 #        line_one = request.readline()
 #        index = line_one.find(b'&')
         
@@ -136,7 +142,9 @@ class ViewPicture(View):
             return HttpResponseNotFound("<h1>No data..."+
                     " (or incorrect format)</h1>")
        
+# this class is responsible for viewing/posting/deleting comments
 class ViewComments(View):
+    # view comments
     def get(self, request, pic_url):
         comment_list = Comment.objects.filter(pic__unique_code=pic_url)
         comment_list.order_by('order')
@@ -146,6 +154,7 @@ class ViewComments(View):
                 })
         return HttpResponse(template.render(context))
 
+    # post/delete comment
     def post(self, request, pic_url):
         try:
             comments = Comment.objects.filter(pic__unique_code=pic_url)
@@ -158,10 +167,12 @@ class ViewComments(View):
             comment = request.readline()
             print(comment)
             comment = comment.decode("utf-8")
+            # delete comment
             if comment.startswith('<remove>'):
                 print('here')
                 delete_comment = Comment.objects.get(comment=comment[8:])
                 delete_comment.delete()
+            # post comment
             else:
                 if len(Comment.objects.filter(comment=comment,
                                 pic=Picture.objects.get(unique_code=pic_url))) > 0:
