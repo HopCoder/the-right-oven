@@ -3,6 +3,7 @@ from django.contrib import admin
 from pictures.views import ViewPicture, PuckUp, ShuckIt, ViewComments
 from puck_user.views import PuckUser, History, GetOldPic, DeletePic
 
+# This is the url dispatcher, and uses regex
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'puck_passer.views.home', name='home'),
