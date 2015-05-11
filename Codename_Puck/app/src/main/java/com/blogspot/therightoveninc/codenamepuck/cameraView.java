@@ -14,11 +14,13 @@ import java.util.List;
 
 /**
  * Created by Timothy D. Mahon on 3/1/2015.
+ * Here we have the cameraView class responsible for making a preview of the camera to the user.
  */
 public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
-    private SurfaceHolder holder;
-    private Camera theCamera;
+    private SurfaceHolder holder; //The surface on which the preview will be displayed
+    private Camera theCamera; //The camera responsible for taking pictures.
 
+    //Constructor to make the camera preview and attach it to the current user view
     public cameraView(Context context, Camera camera) {
         super(context);
         theCamera = camera;
@@ -31,6 +33,7 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
+    //callback responsible for setting the display to the camera preview
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
@@ -41,6 +44,9 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    //callback responsible for changing the display as the view changes (i.e. phone is turned)
+    //Also responsible for correcting the orientation of the preview based on the camera hardware
+    //Detected by the android API
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         //Check to look for surface
         if (holder.getSurface() == null){
@@ -97,11 +103,12 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         previewCamera();
     }
 
-
+    //callback to destroy the surface
     public void surfaceDestroyed(SurfaceHolder holder) {
         // purposely left blank.
     }
 
+    //private method to set up the camera preview into the newly created holder and camera view.
     private void previewCamera()
     {
         //Try to set up the camera view if the camera can not be started catch the exception and output in the log.
@@ -116,14 +123,7 @@ public class cameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private void releaseCamera(){
-        if (theCamera != null){
-            theCamera.stopPreview();
-            theCamera.release();        // release the camera for other applications
-            theCamera = null;
-        }
-    }
-
+    //Method for determining the optimal preview size.
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
         double targetRatio = (double) 3/4;

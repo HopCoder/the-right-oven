@@ -30,8 +30,10 @@ import java.util.Random;
  */
 public class splashActivity extends Activity {
 
-    private static int SPLASH_TIME_OUT = 3000;
+    private static int SPLASH_TIME_OUT = 3000; //Time in millisecond for the splash page
 
+    //The on creat method that creates the application splash rage and presents it to the user.
+    //Likewise the function creates a random 10 digit string to be used as a id and stores it locally
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -30,13 +30,13 @@ import java.net.URL;
     This class represents the activity for browsing photos.
  */
 public class viewActivity extends ActionBarActivity {
-    private PopupWindow popupWindow;
-    private ImageButton imageButton;
-    private URL url;
-    private float previousX, previousY;
-    private final float swipeThres = 10f;
-    private final float tapThres = 0.00001f;
-    private boolean puckshuck = false;
+    private PopupWindow popupWindow; //A popup window that creates a report window to report certain photos.
+    private ImageButton imageButton; //The image being presented to the user.
+    private URL url; //the url for grabbing the most recent posts from the server
+    private float previousX, previousY; //the values for the previous x,y coordinates of the touch gesture used for calculating the difference between the most recent x, y tap.
+    private final float swipeThres = 10f; //the threshold for detecting a movement as a swipe as opposed to a swipe
+    private final float tapThres = 0.00001f; //the threshold for detecting a tap as opposed to a swipe
+    private boolean puckshuck = false; //boolean for blocking asynchronous tasks for pucking and shucking photos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +80,8 @@ public class viewActivity extends ActionBarActivity {
         imageButton = (ImageButton)findViewById(R.id.imageButton);
     }
 
+    //on resume method responsible for getting the lastest post from the server and
+    //filling it into the imagaebutton container to be presented to the user.
     @Override
     protected void onResume()
     {
@@ -230,6 +232,7 @@ public class viewActivity extends ActionBarActivity {
         }
     }
 
+    //the shuck button callback for deleting a message
     public void shuckClick(View v)
     {
         if (!puckshuck){
@@ -262,6 +265,7 @@ public class viewActivity extends ActionBarActivity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
+    //report click function to confirm a report
     public void reportConfirmClick(View v)
     {
         // TODO: add user report logic here
@@ -269,12 +273,13 @@ public class viewActivity extends ActionBarActivity {
         popupWindow.dismiss();
         messageDelete();
     }
-
+    //report click function to dismiss the report window
     public void reportCancelClick(View v)
     {
         popupWindow.dismiss();
     }
 
+    //the camera button callback to start the camera activity class
     public void onCameraClick(View v){
         Intent cameraIntent = new Intent(this, cameraActivity.class);
         startActivity(cameraIntent);

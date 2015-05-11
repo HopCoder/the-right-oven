@@ -16,15 +16,17 @@ import android.widget.TextView;
  * This adapater class adaptatively changes the comment list that can be viewed on a picture.
  */
 public class commentAdapter extends ArrayAdapter<String>{
-    protected Context context;
-    protected String[] values;
+    protected Context context; //The current user context (the layout parameters, the current running activity, etc.)
+    protected String[] values; //The values to be presented in the list.
 
+    //The constructor for creating a comment adapter this grabs the current context and the values of the string array.
     public commentAdapter(Context context, String[] values) {
         super(context, R.layout.comment_row, values);
         this.context = context;
         this.values = values;
     }
 
+    //The getview method for populating and formatting the comment view with the appropriate buttons (such as the delete button) and comments.
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
